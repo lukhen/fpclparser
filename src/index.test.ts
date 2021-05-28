@@ -107,4 +107,20 @@ describe("comm2", () => {
             .toEqual(E.right(expectedCommand))
     })
 
+    test("options in different order", () => {
+        const expectedCommand = comm2("arg2", "someoption11", "someoption22")
+        expect(parseArgv(["comm2", "arg2", "--o4", "someoption22", "--o3", "someoption11"]))
+            .toEqual(E.right(expectedCommand))
+    })
+    test("missing option o4", () => {
+        expect(parseArgv(["comm2", "lukh", "--o3", "someoption1"]))
+            .toEqual(E.left(Error("Required option (o4) is missing.")))
+    })
+
+    test("missing option o3", () => {
+        expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"]))
+            .toEqual(E.left(Error("Required option (o3) is missing.")))
+    })
+
+
 })
