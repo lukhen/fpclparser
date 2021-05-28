@@ -77,25 +77,14 @@ function parseArgv(argv: Array<string>): E.Either<Error, Command1 | Command2> {
 
 }
 
-describe("", () => {
-    test("", () => {
+describe("comm1", () => {
+    test("all options", () => {
         const expectedCommand = comm1("lukh", "someoption1", "someoption2")
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"]))
             .toEqual(E.right(expectedCommand))
     })
 
-    test("", () => {
-        const comm1: Command1 = {
-            _tag: "comm1",
-            arg: "arg2",
-            o1: "someoption11",
-            o2: "someoption22"
-        }
-        expect(parseArgv(["comm1", "arg2", "--o1", "someoption11", "--o2", "someoption22"]))
-            .toEqual(E.right(comm1))
-    })
-
-    test("", () => {
+    test("options in different order", () => {
         const expectedCommand = comm1("arg2", "someoption11", "someoption22")
         expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"]))
             .toEqual(E.right(expectedCommand))
@@ -109,10 +98,13 @@ describe("", () => {
         expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"]))
             .toEqual(E.left(Error("Required option (o1) is missing.")))
     })
+})
 
-    test("comm2, ...", () => {
+describe("comm2", () => {
+    test("all options", () => {
         const expectedCommand = comm2("lukh", "someoption3", "someoption4")
         expect(parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"]))
             .toEqual(E.right(expectedCommand))
     })
+
 })
