@@ -9,6 +9,11 @@ interface Command1 {
     o2: string
 }
 
+// constructor
+function comm1(arg: string, o1: string, o2: string): Command1 {
+    return { _tag: "comm1", arg, o1, o2 }
+}
+
 interface Command2 {
     _tag: "comm2",
     o3: string,
@@ -37,13 +42,7 @@ function parseArgv(argv: Array<string>): E.Either<Error, Command1> {
         sequenceT(E.either)(getO1(argv), getO2(argv)),
         E.fold(
             e => E.left(e),
-            opts => E.right({
-
-                _tag: "comm1",
-                arg: argv[1],
-                o1: opts[0],
-                o2: opts[1]
-            })
+            opts => E.right(comm1(argv[1], opts[0], opts[1]))
 
         )
     )
@@ -51,14 +50,9 @@ function parseArgv(argv: Array<string>): E.Either<Error, Command1> {
 
 describe("", () => {
     test("", () => {
-        const comm1: Command1 = {
-            _tag: "comm1",
-            arg: "lukh",
-            o1: "someoption1",
-            o2: "someoption2"
-        }
+        const expectedCommand = comm1("lukh", "someoption1", "someoption2")
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"]))
-            .toEqual(E.right(comm1))
+            .toEqual(E.right(expectedCommand))
     })
 
     test("", () => {
@@ -73,14 +67,9 @@ describe("", () => {
     })
 
     test("", () => {
-        const comm1: Command1 = {
-            _tag: "comm1",
-            arg: "arg2",
-            o1: "someoption11",
-            o2: "someoption22"
-        }
+        const expectedCommand = comm1("arg2", "someoption11", "someoption22")
         expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"]))
-            .toEqual(E.right(comm1))
+            .toEqual(E.right(expectedCommand))
     })
     test("missing option o2", () => {
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"]))
