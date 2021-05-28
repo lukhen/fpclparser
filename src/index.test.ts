@@ -83,23 +83,11 @@ describe("", () => {
             .toEqual(E.right(comm1))
     })
     test("missing option o2", () => {
-        const comm1: Command1 = {
-            _tag: "comm1",
-            arg: "lukh",
-            o1: "someoption1",
-            o2: "someoption2"
-        }
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"]))
             .toEqual(E.left(Error("Required option (o2) is missing.")))
     })
 
     test("missing option o1", () => {
-        const comm1: Command1 = {
-            _tag: "comm1",
-            arg: "lukh",
-            o1: "someoption1",
-            o2: "someoption2"
-        }
         expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"]))
             .toEqual(E.left(Error("Required option (o1) is missing.")))
     })
