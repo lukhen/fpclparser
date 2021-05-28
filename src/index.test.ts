@@ -2,6 +2,22 @@ import * as E from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
 import { sequenceT } from "fp-ts/lib/Apply"
+import * as A from "fp-ts/lib/Array"
+import * as assert from "assert"
+
+/**
+   Produce Some<Array<any>> from Array<Option<any>> if all elements are Some,
+   otherwise produce None
+ **/
+export function allSomes(a: Array<O.Option<any>>): O.Option<Array<any>> {
+    return pipe(
+        a,
+        A.map(el => O.isSome(el) ? el.value : el),
+        A.filter(el => O.isNone(el) ? false : true),
+        els => els.length == a.length ? O.some(els) : O.none
+    );
+}
+
 interface Command1 {
     _tag: "comm1",
     arg: string
@@ -10,8 +26,19 @@ interface Command1 {
 }
 
 // constructor
-function comm1(arg: string, o1: string, o2: string): Command1 {
-    return { _tag: "comm1", arg, o1, o2 }
+function comm1(arg: string, o1: O.Option<string>, o2: O.Option<string>): E.Either<Error, Command1> {
+    return pipe(
+        allSomes([o1, o2]),
+        O.fold(
+            () => E.left(Error("Option missing")),
+            (x: Array<string>) => E.right({
+                _tag: "comm1",
+                arg,
+                o1: x[0],
+                o2: x[1]
+            })
+        )
+    )
 }
 
 interface Command2 {
@@ -22,82 +49,78 @@ interface Command2 {
 }
 
 // constructor
-function comm2(arg: string, o3: string, o4: string): Command2 {
-    return { _tag: "comm2", arg, o3, o4 }
+function comm2(arg: string, o3: O.Option<string>, o4: O.Option<string>): E.Either<Error, Command2> {
+    return pipe(
+        allSomes([o3, o4]),
+        O.fold(
+            () => E.left(Error("Option missing")),
+            (x: Array<string>) => E.right({
+                _tag: "comm2",
+                arg,
+                o3: x[0],
+                o4: x[1]
+            })
+        )
+    )
 }
 
-
-
-function getOpt(argv: string[], optName: string): E.Either<Error, string> {
+function getOpt(argv: string[], optName: string): O.Option<string> {
     return pipe(
         argv.findIndex(el => el == `--${optName}`),
-        i => i == -1 ? E.left(Error(`Required option (${optName}) is missing.`)) : E.right(argv[i + 1])
+        i => i == -1 ? O.none : O.some(argv[i + 1])
     )
 }
 
 function parseArgv(argv: Array<string>): E.Either<Error, Command1 | Command2> {
     return argv[0] == "comm1"
-        ? pipe(
-            sequenceT(E.either)(getOpt(argv, "o1"), getOpt(argv, "o2")),
-            E.fold(
-                e => E.left(e),
-                opts => E.right(comm1(argv[1], opts[0], opts[1]))
-            )
-        )
-        : pipe(
-            sequenceT(E.either)(getOpt(argv, "o3"), getOpt(argv, "o4")),
-            E.fold(
-                e => E.left(e),
-                opts => E.right(comm2(argv[1], opts[0], opts[1]))
-            )
-        )
+        ? comm1(argv[1], getOpt(argv, "o1"), getOpt(argv, "o2"))
+        : comm2(argv[1], getOpt(argv, "o3"), getOpt(argv, "o4"))
 
 }
 
 describe("comm1", () => {
     test("all options", () => {
-        const expectedCommand = comm1("lukh", "someoption1", "someoption2")
+        const expectedCommand = comm1("lukh", O.some("someoption1"), O.some("someoption2"))
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"]))
-            .toEqual(E.right(expectedCommand))
+            .toEqual(expectedCommand)
     })
 
     test("options in different order", () => {
-        const expectedCommand = comm1("arg2", "someoption11", "someoption22")
+        const expectedCommand = comm1("arg2", O.some("someoption11"), O.some("someoption22"))
         expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"]))
-            .toEqual(E.right(expectedCommand))
+            .toEqual(expectedCommand)
     })
     test("missing option o2", () => {
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"]))
-            .toEqual(E.left(Error("Required option (o2) is missing.")))
+            .toEqual(E.left(Error("Option missing")))
     })
 
     test("missing option o1", () => {
         expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"]))
-            .toEqual(E.left(Error("Required option (o1) is missing.")))
+            .toEqual(E.left(Error("Option missing")))
     })
 })
 
 describe("comm2", () => {
     test("all options", () => {
-        const expectedCommand = comm2("lukh", "someoption3", "someoption4")
-        expect(parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"]))
-            .toEqual(E.right(expectedCommand))
+        const expectedCommand = comm2("lukh", O.some("someoption3"), O.some("someoption4"))
+        const actualCommand = parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"])
+        expect(actualCommand)
+            .toEqual(expectedCommand)
     })
 
     test("options in different order", () => {
-        const expectedCommand = comm2("arg2", "someoption11", "someoption22")
+        const expectedCommand = comm2("arg2", O.some("someoption11"), O.some("someoption22"))
         expect(parseArgv(["comm2", "arg2", "--o4", "someoption22", "--o3", "someoption11"]))
-            .toEqual(E.right(expectedCommand))
+            .toEqual(expectedCommand)
     })
     test("missing option o4", () => {
         expect(parseArgv(["comm2", "lukh", "--o3", "someoption1"]))
-            .toEqual(E.left(Error("Required option (o4) is missing.")))
+            .toEqual(E.left(Error("Option missing")))
     })
 
     test("missing option o3", () => {
         expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"]))
-            .toEqual(E.left(Error("Required option (o3) is missing.")))
+            .toEqual(E.left(Error("Option missing")))
     })
-
-
 })
