@@ -16,8 +16,14 @@ function comm1(arg: string, o1: string, o2: string): Command1 {
 
 interface Command2 {
     _tag: "comm2",
+    arg: string,
     o3: string,
     o4: string
+}
+
+// constructor
+function comm2(arg: string, o3: string, o4: string): Command2 {
+    return { _tag: "comm2", arg, o3, o4 }
 }
 
 
@@ -37,15 +43,38 @@ function getO1(argv: string[]): E.Either<Error, string> {
 
 }
 
-function parseArgv(argv: Array<string>): E.Either<Error, Command1> {
+function getO3(argv: string[]): E.Either<Error, string> {
     return pipe(
-        sequenceT(E.either)(getO1(argv), getO2(argv)),
-        E.fold(
-            e => E.left(e),
-            opts => E.right(comm1(argv[1], opts[0], opts[1]))
-
-        )
+        argv.findIndex(el => el == "--o3"),
+        i => i == -1 ? E.left(Error("Required option (o3) is missing.")) : E.right(argv[i + 1])
     )
+}
+
+function getO4(argv: string[]): E.Either<Error, string> {
+    return pipe(
+        argv.findIndex(el => el == "--o4"),
+        i => i == -1 ? E.left(Error("Required option (o4) is missing.")) : E.right(argv[i + 1])
+    )
+}
+
+
+function parseArgv(argv: Array<string>): E.Either<Error, Command1 | Command2> {
+    return argv[0] == "comm1"
+        ? pipe(
+            sequenceT(E.either)(getO1(argv), getO2(argv)),
+            E.fold(
+                e => E.left(e),
+                opts => E.right(comm1(argv[1], opts[0], opts[1]))
+            )
+        )
+        : pipe(
+            sequenceT(E.either)(getO3(argv), getO4(argv)),
+            E.fold(
+                e => E.left(e),
+                opts => E.right(comm2(argv[1], opts[0], opts[1]))
+            )
+        )
+
 }
 
 describe("", () => {
@@ -81,5 +110,9 @@ describe("", () => {
             .toEqual(E.left(Error("Required option (o1) is missing.")))
     })
 
-
+    test("comm2, ...", () => {
+        const expectedCommand = comm2("lukh", "someoption3", "someoption4")
+        expect(parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"]))
+            .toEqual(E.right(expectedCommand))
+    })
 })
