@@ -3,20 +3,6 @@ import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
 import { sequenceT } from "fp-ts/lib/Apply"
 import * as A from "fp-ts/lib/Array"
-import * as assert from "assert"
-
-/**
-   Produce Some<Array<any>> from Array<Option<any>> if all elements are Some,
-   otherwise produce None
- **/
-export function allSomes(a: Array<O.Option<any>>): O.Option<Array<any>> {
-    return pipe(
-        a,
-        A.map(el => O.isSome(el) ? el.value : el),
-        A.filter(el => O.isNone(el) ? false : true),
-        els => els.length == a.length ? O.some(els) : O.none
-    );
-}
 
 interface Command1 {
     _tag: "comm1",
@@ -28,7 +14,7 @@ interface Command1 {
 // constructor
 function comm1(arg: string, o1: O.Option<string>, o2: O.Option<string>): E.Either<Error, Command1> {
     return pipe(
-        allSomes([o1, o2]),
+        sequenceT(O.option)(o1, o2),
         O.fold(
             () => E.left(Error("Option missing")),
             (x: Array<string>) => E.right({
@@ -51,7 +37,7 @@ interface Command2 {
 // constructor
 function comm2(arg: string, o3: O.Option<string>, o4: O.Option<string>): E.Either<Error, Command2> {
     return pipe(
-        allSomes([o3, o4]),
+        sequenceT(O.option)(o3, o4),
         O.fold(
             () => E.left(Error("Option missing")),
             (x: Array<string>) => E.right({
