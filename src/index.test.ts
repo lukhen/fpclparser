@@ -1,6 +1,7 @@
 import * as E from "fp-ts/lib/Either"
 import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
+import { sequenceT } from "fp-ts/lib/Apply"
 interface Command1 {
     _tag: "comm1",
     arg: string
@@ -23,21 +24,25 @@ function getO2(argv: string[]): E.Either<Error, string> {
     )
 }
 
-function getO1(argv: string[]): string {
-    return argv[argv.findIndex(el => el == "--o1") + 1]
+function getO1(argv: string[]): E.Either<Error, string> {
+    return pipe(
+        argv.findIndex(el => el == "--o1"),
+        i => i == -1 ? E.left(Error("Required option (o1) is missing.")) : E.right(argv[i + 1])
+    )
+
 }
 
 function parseArgv(argv: Array<string>): E.Either<Error, Command1> {
     return pipe(
-        getO2(argv),
+        sequenceT(E.either)(getO1(argv), getO2(argv)),
         E.fold(
             e => E.left(e),
-            o2 => E.right({
+            opts => E.right({
 
                 _tag: "comm1",
                 arg: argv[1],
-                o1: getO1(argv),
-                o2: o2
+                o1: opts[0],
+                o2: opts[1]
             })
 
         )
@@ -77,7 +82,7 @@ describe("", () => {
         expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"]))
             .toEqual(E.right(comm1))
     })
-    test("", () => {
+    test("missing option o2", () => {
         const comm1: Command1 = {
             _tag: "comm1",
             arg: "lukh",
@@ -87,5 +92,17 @@ describe("", () => {
         expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"]))
             .toEqual(E.left(Error("Required option (o2) is missing.")))
     })
+
+    test("missing option o1", () => {
+        const comm1: Command1 = {
+            _tag: "comm1",
+            arg: "lukh",
+            o1: "someoption1",
+            o2: "someoption2"
+        }
+        expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"]))
+            .toEqual(E.left(Error("Required option (o1) is missing.")))
+    })
+
 
 })
