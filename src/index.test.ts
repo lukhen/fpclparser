@@ -28,47 +28,24 @@ function comm2(arg: string, o3: string, o4: string): Command2 {
 
 
 
-function getO2(argv: string[]): E.Either<Error, string> {
+function getOpt(argv: string[], optName: string): E.Either<Error, string> {
     return pipe(
-        argv.findIndex(el => el == "--o2"),
-        i => i == -1 ? E.left(Error("Required option (o2) is missing.")) : E.right(argv[i + 1])
+        argv.findIndex(el => el == `--${optName}`),
+        i => i == -1 ? E.left(Error(`Required option (${optName}) is missing.`)) : E.right(argv[i + 1])
     )
 }
-
-function getO1(argv: string[]): E.Either<Error, string> {
-    return pipe(
-        argv.findIndex(el => el == "--o1"),
-        i => i == -1 ? E.left(Error("Required option (o1) is missing.")) : E.right(argv[i + 1])
-    )
-
-}
-
-function getO3(argv: string[]): E.Either<Error, string> {
-    return pipe(
-        argv.findIndex(el => el == "--o3"),
-        i => i == -1 ? E.left(Error("Required option (o3) is missing.")) : E.right(argv[i + 1])
-    )
-}
-
-function getO4(argv: string[]): E.Either<Error, string> {
-    return pipe(
-        argv.findIndex(el => el == "--o4"),
-        i => i == -1 ? E.left(Error("Required option (o4) is missing.")) : E.right(argv[i + 1])
-    )
-}
-
 
 function parseArgv(argv: Array<string>): E.Either<Error, Command1 | Command2> {
     return argv[0] == "comm1"
         ? pipe(
-            sequenceT(E.either)(getO1(argv), getO2(argv)),
+            sequenceT(E.either)(getOpt(argv, "o1"), getOpt(argv, "o2")),
             E.fold(
                 e => E.left(e),
                 opts => E.right(comm1(argv[1], opts[0], opts[1]))
             )
         )
         : pipe(
-            sequenceT(E.either)(getO3(argv), getO4(argv)),
+            sequenceT(E.either)(getOpt(argv, "o3"), getOpt(argv, "o4")),
             E.fold(
                 e => E.left(e),
                 opts => E.right(comm2(argv[1], opts[0], opts[1]))
