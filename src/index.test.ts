@@ -3,6 +3,7 @@ import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
 import { sequenceT } from "fp-ts/lib/Apply"
 import * as A from "fp-ts/lib/Array"
+import { } from "fp-ts/lib/Record"
 
 interface Command1 {
     _tag: "comm1",
@@ -50,39 +51,51 @@ function comm2(arg: string, o3: O.Option<string>, o4: O.Option<string>): E.Eithe
     )
 }
 
-function getOpt(argv: string[], optName: string): O.Option<string> {
-    return pipe(
+function getOpt(argv: string[]): (optName: string) => O.Option<string> {
+    return optName => pipe(
         argv.findIndex(el => el == `--${optName}`),
         i => i == -1 ? O.none : O.some(argv[i + 1])
     )
 }
 
-function parseArgv(argv: Array<string>): E.Either<Error, Command1 | Command2> {
-    return argv[0] == "comm1"
-        ? comm1(argv[1], getOpt(argv, "o1"), getOpt(argv, "o2"))
-        : comm2(argv[1], getOpt(argv, "o3"), getOpt(argv, "o4"))
+type CommandMetas = {
+    [key: string]: {
+        constructor: (arg: string, ...opts: Array<O.Option<string>>) => E.Either<Error, Command1 | Command2>,
+        optNames: Array<string>
+    }
+}
 
+const defaultCommandMetas: CommandMetas = {
+    comm1: { constructor: comm1, optNames: ["o1", "o2"] },
+    comm2: { constructor: comm2, optNames: ["o3", "o4"] }
+}
+
+function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2> {
+    return pipe(
+        cms[argv[0]],
+        cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames))
+    )
 }
 
 describe("comm1", () => {
     test("all options", () => {
         const expectedCommand = comm1("lukh", O.some("someoption1"), O.some("someoption2"))
-        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"]))
+        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"], defaultCommandMetas))
             .toEqual(expectedCommand)
     })
 
     test("options in different order", () => {
         const expectedCommand = comm1("arg2", O.some("someoption11"), O.some("someoption22"))
-        expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"]))
+        expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"], defaultCommandMetas))
             .toEqual(expectedCommand)
     })
     test("missing option o2", () => {
-        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"]))
+        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"], defaultCommandMetas))
             .toEqual(E.left(Error("Option missing")))
     })
 
     test("missing option o1", () => {
-        expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"]))
+        expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"], defaultCommandMetas))
             .toEqual(E.left(Error("Option missing")))
     })
 })
@@ -90,23 +103,23 @@ describe("comm1", () => {
 describe("comm2", () => {
     test("all options", () => {
         const expectedCommand = comm2("lukh", O.some("someoption3"), O.some("someoption4"))
-        const actualCommand = parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"])
+        const actualCommand = parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"], defaultCommandMetas)
         expect(actualCommand)
             .toEqual(expectedCommand)
     })
 
     test("options in different order", () => {
         const expectedCommand = comm2("arg2", O.some("someoption11"), O.some("someoption22"))
-        expect(parseArgv(["comm2", "arg2", "--o4", "someoption22", "--o3", "someoption11"]))
+        expect(parseArgv(["comm2", "arg2", "--o4", "someoption22", "--o3", "someoption11"], defaultCommandMetas))
             .toEqual(expectedCommand)
     })
     test("missing option o4", () => {
-        expect(parseArgv(["comm2", "lukh", "--o3", "someoption1"]))
+        expect(parseArgv(["comm2", "lukh", "--o3", "someoption1"], defaultCommandMetas))
             .toEqual(E.left(Error("Option missing")))
     })
 
     test("missing option o3", () => {
-        expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"]))
+        expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"], defaultCommandMetas))
             .toEqual(E.left(Error("Option missing")))
     })
 })
