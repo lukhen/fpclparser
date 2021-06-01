@@ -73,7 +73,9 @@ const defaultCommandMetas: CommandMetas = {
 function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2> {
     return pipe(
         cms[argv[0]],
-        cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames))
+        O.fromNullable,
+        E.fromOption(() => Error("Invalid command")),
+        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames)))
     )
 }
 
@@ -121,5 +123,12 @@ describe("comm2", () => {
     test("missing option o3", () => {
         expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"], defaultCommandMetas))
             .toEqual(E.left(Error("Option missing")))
+    })
+})
+
+describe("wrong command", () => {
+    test("should produce E.left(error)", () => {
+        expect(parseArgv(["wrongcomm", "lukh", "--o1", "someoption1", "--o2", "someoption2"], defaultCommandMetas))
+            .toEqual(E.left(Error("Invalid command")))
     })
 })
