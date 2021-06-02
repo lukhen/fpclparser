@@ -51,6 +51,30 @@ function comm2(arg: string, o3: O.Option<string>, o4: O.Option<string>): E.Eithe
     )
 }
 
+interface Command3 {
+    _tag: "comm3",
+    arg: string,
+    req: string,
+    opt: O.Option<string>
+}
+
+// constructor
+function comm3(arg: string, req: O.Option<string>, opt: O.Option<string>): E.Either<Error, Command3> {
+    return pipe(
+        sequenceT(O.option)(req, opt),
+        O.fold(
+            () => E.left(Error("Option missing")),
+            (x: Array<string>) => E.right({
+                _tag: "comm3",
+                arg,
+                req: x[0],
+                opt: opt
+            })
+        )
+    )
+}
+
+
 function getOpt(argv: string[]): (optName: string) => O.Option<string> {
     return optName => pipe(
         argv.findIndex(el => el == `--${optName}`),
@@ -60,17 +84,18 @@ function getOpt(argv: string[]): (optName: string) => O.Option<string> {
 
 type CommandMetas = {
     [key: string]: {
-        constructor: (arg: string, ...opts: Array<O.Option<string>>) => E.Either<Error, Command1 | Command2>,
+        constructor: (arg: string, ...opts: Array<O.Option<string>>) => E.Either<Error, Command1 | Command2 | Command3>,
         optNames: Array<string>
     }
 }
 
 const defaultCommandMetas: CommandMetas = {
     comm1: { constructor: comm1, optNames: ["o1", "o2"] },
-    comm2: { constructor: comm2, optNames: ["o3", "o4"] }
+    comm2: { constructor: comm2, optNames: ["o3", "o4"] },
+    comm3: { constructor: comm3, optNames: ["req", "opt"] }
 }
 
-function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2> {
+function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2 | Command3> {
     return pipe(
         cms[argv[0]],
         O.fromNullable,
@@ -130,5 +155,15 @@ describe("wrong command", () => {
     test("should produce E.left(error)", () => {
         expect(parseArgv(["wrongcomm", "lukh", "--o1", "someoption1", "--o2", "someoption2"], defaultCommandMetas))
             .toEqual(E.left(Error("Invalid command")))
+    })
+})
+
+
+describe("comm3, optional option", () => {
+    test("optional option present", () => {
+        const expectedCommand = comm3("somearg", O.some("required"), O.some("optional"))
+        const actualCommand = parseArgv(["comm3", "somearg", "--req", "required", "--opt", "optional"], defaultCommandMetas)
+        expect(actualCommand)
+            .toEqual(expectedCommand)
     })
 })
