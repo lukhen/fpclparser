@@ -174,4 +174,11 @@ describe("comm3, optional option", () => {
             .toEqual(expectedCommand)
     })
 
+    test("optional option present, required option missing", () => {
+        const actualCommand = parseArgv(["comm3", "somearg", "--opt", "optional"], defaultCommandMetas)
+        expect(actualCommand)
+            .toEqual(E.left(Error("Option missing")))
+    })
+
+
 })
