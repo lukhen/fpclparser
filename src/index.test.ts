@@ -61,13 +61,13 @@ interface Command3 {
 // constructor
 function comm3(arg: string, req: O.Option<string>, opt: O.Option<string>): E.Either<Error, Command3> {
     return pipe(
-        sequenceT(O.option)(req, opt),
+        req,
         O.fold(
             () => E.left(Error("Option missing")),
-            (x: Array<string>) => E.right({
+            (value: string) => E.right({
                 _tag: "comm3",
                 arg,
-                req: x[0],
+                req: value,
                 opt: opt
             })
         )
@@ -166,4 +166,12 @@ describe("comm3, optional option", () => {
         expect(actualCommand)
             .toEqual(expectedCommand)
     })
+
+    test("optional option missing", () => {
+        const expectedCommand = comm3("somearg", O.some("required"), O.none)
+        const actualCommand = parseArgv(["comm3", "somearg", "--req", "required"], defaultCommandMetas)
+        expect(actualCommand)
+            .toEqual(expectedCommand)
+    })
+
 })
