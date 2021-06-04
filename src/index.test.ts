@@ -180,3 +180,22 @@ describe("comm3, optional option", () => {
     })
 })
 
+function getOpt2(argv: string[]): (optName: string) => O.Option<Array<string>> {
+    return optName => pipe(
+        argv.findIndex(el => el == `--${optName}`),
+        i => i == -1 ? O.none : O.some([argv[i + 1]])
+    )
+}
+
+describe("getOpt2", () => {
+    test("single option, option string only", () => {
+        expect(getOpt2(["--o1", "val1"])("o1")).toEqual(O.some(["val1"]))
+    })
+    test("single option, option string in the middle of other elements", () => {
+        expect(getOpt2(["", "--o1", "val1", ""])("o1")).toEqual(O.some(["val1"]))
+    })
+    test("single option, option missing ", () => {
+        expect(getOpt2(["", "--o2", "val1", ""])("o1")).toEqual(O.none)
+    })
+
+})
