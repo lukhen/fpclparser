@@ -182,11 +182,25 @@ describe("comm3, optional option", () => {
 
 
 function getOpt2(argv: string[]): (optName: string) => O.Option<Array<string>> {
-    return optName => A.isEmpty(argv)
-        ? O.none
-        : argv[0] == `--${optName}`
-            ? O.some([argv[1]])
-            : getOpt2(argv.slice(1))(optName)
+    return optName => pipe(
+        argv,
+        A.reduce(
+            O.none,
+            (b: O.Option<string[]>, a) => {
+                return pipe(
+                    b,
+                    O.fold(
+                        () => pipe(
+                            a,
+                            O.fromPredicate(el => el == `--${optName}`),
+                            O.map(() => [])
+                        ),
+                        y => O.some(y.length < 1 ? y.concat(a) : y)
+                    )
+                )
+            }
+        )
+    )
 }
 
 describe("getOpt2", () => {
@@ -200,3 +214,4 @@ describe("getOpt2", () => {
         expect(getOpt2(["", "--o2", "val1", ""])("o1")).toEqual(O.none)
     })
 })
+
