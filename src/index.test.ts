@@ -221,7 +221,13 @@ type OptionDict = { [optName: string]: string[] }
 
 // !!! wish
 function getAllOptionList(argv: string[]): OptionList {
-    return []
+    return pipe(
+        argv,
+        A.reduce(
+            [],
+            (b: OptionList, a) => [{ name: a.slice(2), values: [] }]
+        )
+    )
 }
 // !!! wish
 function getOptions(q: OptionList): OptionDict {
@@ -236,6 +242,11 @@ describe("getAllOptionList", () => {
     test("empty", () => {
         expect(getAllOptionList([])).toEqual([])
     })
+
+    test("one option, no values", () => {
+        expect(getAllOptionList(["--o1"])).toEqual([{ name: "o1", values: [] }])
+    })
+
 })
 
 describe("getOpt3", () => {
