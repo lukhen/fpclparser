@@ -225,7 +225,7 @@ function getAllOptionList(argv: string[]): OptionList {
         argv,
         A.reduce(
             [],
-            (b: OptionList, a) => [{ name: a.slice(2), values: [] }]
+            (b: OptionList, a) => [...b, { name: a.slice(2), values: [] }]
         )
     )
 }
@@ -243,9 +243,15 @@ describe("getAllOptionList", () => {
         expect(getAllOptionList([])).toEqual([])
     })
 
-    test("one option, no values", () => {
+    test("one flag option", () => {
         expect(getAllOptionList(["--o1"])).toEqual([{ name: "o1", values: [] }])
     })
+
+    test("two flag options", () => {
+        expect(getAllOptionList(["--o1", "--o2"]))
+            .toEqual([{ name: "o1", values: [] }, { name: "o2", values: [] }])
+    })
+
 
 })
 
