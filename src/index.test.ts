@@ -232,6 +232,12 @@ function getOpt3(argv: string[]): (optName: string) => O.Option<Array<string>> {
     return optName => O.fromNullable(getOptions(getAllOptionList(argv))[optName])
 }
 
+describe("getAllOptionList", () => {
+    test("empty", () => {
+        expect(getAllOptionList([])).toEqual([])
+    })
+})
+
 describe("getOpt3", () => {
     test("single option, option string only", () => {
         expect(getOpt3(["--o1", "val1"])("o1")).toEqual(
