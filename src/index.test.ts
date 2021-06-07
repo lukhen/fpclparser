@@ -252,6 +252,16 @@ describe("getAllOptionList", () => {
             .toEqual([{ name: "o1", values: [] }, { name: "o2", values: [] }])
     })
 
+    test("five flag options", () => {
+        expect(getAllOptionList(["--o1", "--o2", "--o3", "--o4", "--o5"]))
+            .toEqual([{ name: "o1", values: [] },
+            { name: "o2", values: [] },
+            { name: "o3", values: [] },
+            { name: "o4", values: [] },
+            { name: "o5", values: [] }])
+    })
+
+
 
 })
 
