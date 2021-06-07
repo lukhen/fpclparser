@@ -215,3 +215,28 @@ describe("getOpt2", () => {
     })
 })
 
+
+type OptionList = { name: string, values: string[] }[]
+type OptionDict = { [optName: string]: string[] }
+
+// !!! wish
+function getAllOptionList(argv: string[]): OptionList {
+    return []
+}
+// !!! wish
+function getOptions(q: OptionList): OptionDict {
+    return {}
+}
+
+function getOpt3(argv: string[]): (optName: string) => O.Option<Array<string>> {
+    return optName => O.fromNullable(getOptions(getAllOptionList(argv))[optName])
+}
+
+describe("getOpt3", () => {
+    test("single option, option string only", () => {
+        expect(getOpt3(["--o1", "val1"])("o1")).toEqual(
+            O.fromNullable(getOptions(getAllOptionList(["--o1", "val1"]))["o1"]))
+    })
+})
+
+
