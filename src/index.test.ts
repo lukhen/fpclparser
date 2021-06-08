@@ -240,8 +240,8 @@ function getAllOptionList(argv: string[]): OptionList {
         )
     )
 }
-function sliceFrom0ToSecondToLast(soFar: OptionList) {
-    return soFar.slice(0, soFar.length - 2)
+function sliceFrom0ToSecondToLast<A>(arr: Array<A>): Array<A> {
+    return arr.slice(0, arr.length - 2)
 }
 
 // !!! wish
