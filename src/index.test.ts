@@ -262,12 +262,19 @@ describe("explodeTailTip", () => {
 
 
 // !!! wish
-function getOptions(q: CommandOption[]): CommandOptionDict {
+function getOptionDict(q: CommandOption[]): CommandOptionDict {
     return {}
 }
 
+describe("getOptionsDict", () => {
+    test("empty CommandOpion list", () => {
+        expect(getOptionDict([])).toEqual({})
+    })
+})
+
+
 function getOpt3(argv: string[]): (optName: string) => O.Option<Array<string>> {
-    return optName => O.fromNullable(getOptions(getAllOptionList(argv))[optName])
+    return optName => O.fromNullable(getOptionDict(getAllOptionList(argv))[optName])
 }
 
 describe("getAllOptionList", () => {
@@ -344,7 +351,7 @@ describe("getAllOptionList", () => {
 describe("getOpt3", () => {
     test("single option, option string only", () => {
         expect(getOpt3(["--o1", "val1"])("o1")).toEqual(
-            O.fromNullable(getOptions(getAllOptionList(["--o1", "val1"]))["o1"]))
+            O.fromNullable(getOptionDict(getAllOptionList(["--o1", "val1"]))["o1"]))
     })
 })
 
