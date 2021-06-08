@@ -230,7 +230,7 @@ function getAllOptionList(argv: string[]): OptionList {
                 E.fromPredicate(el => el.startsWith("--"), el => el),
                 E.fold(
                     el => [
-                        ...sliceFrom0ToSecondToLast(soFar).body,
+                        ...explodeTailTip(soFar).body,
                         (last => ({ ...last, values: A.append(el)(last.values) }))(soFar[soFar.length - 1])
                     ],
                     el => [...soFar, { name: el.slice(2), values: [] }]
@@ -241,9 +241,19 @@ function getAllOptionList(argv: string[]): OptionList {
     )
 }
 
-function sliceFrom0ToSecondToLast<A>(arr: Array<A>): { body: Array<A>, tailTip: A } {
-    return { body: arr.slice(0, arr.length - 2), tailTip: arr[arr.length - 1] }
+function explodeTailTip<A>(arr: Array<A>): { body: Array<A>, tailTip: A } {
+    return { body: arr.slice(0, arr.length - 1), tailTip: arr[arr.length - 1] }
 }
+
+
+describe("explodeTailTip", () => {
+    test("different", () => {
+        expect(explodeTailTip([])).toEqual({ body: [], tailTip: undefined }) // SMELL, change to Option
+        expect(explodeTailTip([1])).toEqual({ body: [], tailTip: 1 })
+        expect(explodeTailTip([1, 2, 3, 4, 5])).toEqual({ body: [1, 2, 3, 4], tailTip: 5 })
+    })
+})
+
 
 // !!! wish
 function getOptions(q: OptionList): OptionDict {
