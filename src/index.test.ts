@@ -309,6 +309,30 @@ describe("getAllOptionList", () => {
             .toEqual([{ name: "o1", values: ["value1"] }, { name: "o2", values: ["value2"] }])
     })
 
+    test("Multiple options with multiple values and flag values", () => {
+        expect(getAllOptionList([
+            "--o1", "value1", "value2", "value3", "value4",
+            "--o2", "value5", "value6", "value7",
+            "--o3", "value8", "value9", "value10",
+            "--o4",
+            "--o5", "value11", "value12", "value13",
+
+        ]))
+            .toEqual([
+                {
+                    name: "o1", values: ["value1", "value2", "value3", "value4"]
+                }, {
+                    name: "o2", values: ["value5", "value6", "value7"]
+                }, {
+                    name: "o3", values: ["value8", "value9", "value10"]
+                }, {
+                    name: "o4", values: []
+                }, {
+                    name: "o5", values: ["value11", "value12", "value13"]
+                }])
+    })
+
+
 
 })
 
