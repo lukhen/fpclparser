@@ -225,21 +225,25 @@ function getAllOptionList(argv: string[]): OptionList {
         argv,
         A.reduce(
             [],
-            (b: OptionList, a) => pipe(
-                a,
-                E.fromPredicate(x => x.startsWith("--"), x => x),
+            (soFar: OptionList, nextEl) => pipe(
+                nextEl,
+                E.fromPredicate(el => el.startsWith("--"), el => el),
                 E.fold(
-                    a => [
-                        ...b.slice(0, b.length - 2),
-                        (last => ({ ...last, values: A.append(a)(last.values) }))(b[b.length - 1])
+                    el => [
+                        ...sliceFrom0ToSecondToLast(soFar),
+                        (last => ({ ...last, values: A.append(el)(last.values) }))(soFar[soFar.length - 1])
                     ],
-                    a => [...b, { name: a.slice(2), values: [] }]
+                    el => [...soFar, { name: el.slice(2), values: [] }]
                 )
 
             )
         )
     )
 }
+function sliceFrom0ToSecondToLast(soFar: OptionList) {
+    return soFar.slice(0, soFar.length - 2)
+}
+
 // !!! wish
 function getOptions(q: OptionList): OptionDict {
     return {}
