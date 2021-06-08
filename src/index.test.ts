@@ -215,17 +215,16 @@ describe("getOpt2", () => {
     })
 })
 
+type CommandOption = { name: string, values: string[] }
+type CommandOptionDict = { [optName: string]: string[] }
 
-type OptionList = { name: string, values: string[] }[]
-type OptionDict = { [optName: string]: string[] }
 
-
-function getAllOptionList(argv: string[]): OptionList {
+function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(
         argv,
         A.reduce(
             [],
-            (soFar: OptionList, nextEl) => pipe(
+            (soFar: CommandOption[], nextEl) => pipe(
                 nextEl,
                 E.fromPredicate(el => el.startsWith("--"), el => el),
                 E.fold(
@@ -234,9 +233,9 @@ function getAllOptionList(argv: string[]): OptionList {
                         explodeTailTip,
                         ({ body, tailTip }) => O.fold(
                             () => [...body],
-                            (a: { name: string, values: string[] }) => [
+                            (co: CommandOption) => [
                                 ...body,
-                                { ...a, values: A.append(el)(a.values) }
+                                { ...co, values: A.append(el)(co.values) }
                             ]
                         )(tailTip)
                     ),
@@ -263,7 +262,7 @@ describe("explodeTailTip", () => {
 
 
 // !!! wish
-function getOptions(q: OptionList): OptionDict {
+function getOptions(q: CommandOption[]): CommandOptionDict {
     return {}
 }
 
