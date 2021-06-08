@@ -225,7 +225,18 @@ function getAllOptionList(argv: string[]): OptionList {
         argv,
         A.reduce(
             [],
-            (b: OptionList, a) => [...b, { name: a.slice(2), values: [] }]
+            (b: OptionList, a) => pipe(
+                a,
+                E.fromPredicate(x => x.startsWith("--"), x => x),
+                E.fold(
+                    a => [
+                        ...b.slice(0, b.length - 2),
+                        (last => ({ ...last, values: A.append(a)(last.values) }))(b[b.length - 1])
+                    ],
+                    a => [...b, { name: a.slice(2), values: [] }]
+                )
+
+            )
         )
     )
 }
@@ -261,7 +272,10 @@ describe("getAllOptionList", () => {
             { name: "o5", values: [] }])
     })
 
-
+    test("one option with single value", () => {
+        expect(getAllOptionList(["--o1", "value"]))
+            .toEqual([{ name: "o1", values: ["value"] }])
+    })
 
 })
 
