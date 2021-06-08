@@ -219,7 +219,7 @@ describe("getOpt2", () => {
 type OptionList = { name: string, values: string[] }[]
 type OptionDict = { [optName: string]: string[] }
 
-// !!! wish
+
 function getAllOptionList(argv: string[]): OptionList {
     return pipe(
         argv,
@@ -255,7 +255,7 @@ function explodeTailTip<A>(arr: Array<A>): { body: Array<A>, tailTip: O.Option<A
 
 describe("explodeTailTip", () => {
     test("different", () => {
-        expect(explodeTailTip([])).toEqual({ body: [], tailTip: O.none }) // SMELL, change to Option
+        expect(explodeTailTip([])).toEqual({ body: [], tailTip: O.none })
         expect(explodeTailTip([1])).toEqual({ body: [], tailTip: O.some(1) })
         expect(explodeTailTip([1, 2, 3, 4, 5])).toEqual({ body: [1, 2, 3, 4], tailTip: O.some(5) })
     })
