@@ -229,10 +229,12 @@ function getAllOptionList(argv: string[]): OptionList {
                 nextEl,
                 E.fromPredicate(el => el.startsWith("--"), el => el),
                 E.fold(
-                    el => [
-                        ...explodeTailTip(soFar).body,
-                        (last => ({ ...last, values: A.append(el)(last.values) }))(soFar[soFar.length - 1])
-                    ],
+                    el => pipe(
+                        soFar,
+                        explodeTailTip,
+                        ({ body, tailTip }) => [
+                            ...body,
+                            { ...tailTip, values: A.append(el)(tailTip.values) }]),
                     el => [...soFar, { name: el.slice(2), values: [] }]
                 )
 
