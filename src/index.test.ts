@@ -230,7 +230,7 @@ function getAllOptionList(argv: string[]): OptionList {
                 E.fromPredicate(el => el.startsWith("--"), el => el),
                 E.fold(
                     el => [
-                        ...sliceFrom0ToSecondToLast(soFar),
+                        ...sliceFrom0ToSecondToLast(soFar).body,
                         (last => ({ ...last, values: A.append(el)(last.values) }))(soFar[soFar.length - 1])
                     ],
                     el => [...soFar, { name: el.slice(2), values: [] }]
@@ -240,8 +240,9 @@ function getAllOptionList(argv: string[]): OptionList {
         )
     )
 }
-function sliceFrom0ToSecondToLast<A>(arr: Array<A>): Array<A> {
-    return arr.slice(0, arr.length - 2)
+
+function sliceFrom0ToSecondToLast<A>(arr: Array<A>): { body: Array<A>, tailTip: A } {
+    return { body: arr.slice(0, arr.length - 2), tailTip: arr[arr.length - 1] }
 }
 
 // !!! wish
