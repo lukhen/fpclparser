@@ -232,9 +232,14 @@ function getAllOptionList(argv: string[]): OptionList {
                     el => pipe(
                         soFar,
                         explodeTailTip,
-                        ({ body, tailTip }) => [
-                            ...body,
-                            { ...tailTip, values: A.append(el)(tailTip.values) }]),
+                        ({ body, tailTip }) => O.fold(
+                            () => [...body],
+                            (a: { name: string, values: string[] }) => [
+                                ...body,
+                                { ...a, values: A.append(el)(a.values) }
+                            ]
+                        )(tailTip)
+                    ),
                     el => [...soFar, { name: el.slice(2), values: [] }]
                 )
 
@@ -243,16 +248,16 @@ function getAllOptionList(argv: string[]): OptionList {
     )
 }
 
-function explodeTailTip<A>(arr: Array<A>): { body: Array<A>, tailTip: A } {
-    return { body: arr.slice(0, arr.length - 1), tailTip: arr[arr.length - 1] }
+function explodeTailTip<A>(arr: Array<A>): { body: Array<A>, tailTip: O.Option<A> } {
+    return { body: arr.slice(0, arr.length - 1), tailTip: O.fromNullable(arr[arr.length - 1]) }
 }
 
 
 describe("explodeTailTip", () => {
     test("different", () => {
-        expect(explodeTailTip([])).toEqual({ body: [], tailTip: undefined }) // SMELL, change to Option
-        expect(explodeTailTip([1])).toEqual({ body: [], tailTip: 1 })
-        expect(explodeTailTip([1, 2, 3, 4, 5])).toEqual({ body: [1, 2, 3, 4], tailTip: 5 })
+        expect(explodeTailTip([])).toEqual({ body: [], tailTip: O.none }) // SMELL, change to Option
+        expect(explodeTailTip([1])).toEqual({ body: [], tailTip: O.some(1) })
+        expect(explodeTailTip([1, 2, 3, 4, 5])).toEqual({ body: [1, 2, 3, 4], tailTip: O.some(5) })
     })
 })
 
@@ -331,9 +336,10 @@ describe("getAllOptionList", () => {
                     name: "o5", values: ["value11", "value12", "value13"]
                 }])
     })
-
-
-
+    test("no option at the begginning", () => {
+        expect(getAllOptionList(["value1", "--o1", "value1"]))
+            .toEqual([{ name: "o1", values: ["value1"] }])
+    })
 })
 
 describe("getOpt3", () => {
