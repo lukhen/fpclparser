@@ -304,6 +304,11 @@ describe("getAllOptionList", () => {
             .toEqual([{ name: "o1", values: ["value1", "value2", "value3", "value4", "value5"] }])
     })
 
+    test("2 options with single values", () => {
+        expect(getAllOptionList(["--o1", "value1", "--o2", "value2"]))
+            .toEqual([{ name: "o1", values: ["value1"] }, { name: "o2", values: ["value2"] }])
+    })
+
 
 })
 
