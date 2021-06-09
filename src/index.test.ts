@@ -6,13 +6,6 @@ import * as R from "fp-ts/lib/Record"
 import { Command1, Command2, Command3, comm1, comm2, comm3, defaultCommandMetas, CommandMetas } from "./command"
 
 
-function getOpt(argv: string[]): (optName: string) => O.Option<Array<string>> {
-    return optName => pipe(
-        argv.findIndex(el => el == `--${optName}`),
-        i => i == -1 ? O.none : O.some([argv[i + 1]])
-    )
-}
-
 function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2 | Command3> {
     return pipe(
         cms[argv[0]],
@@ -99,40 +92,6 @@ describe("comm3, optional option", () => {
     })
 })
 
-
-function getOpt2(argv: string[]): (optName: string) => O.Option<Array<string>> {
-    return optName => pipe(
-        argv,
-        A.reduce(
-            O.none,
-            (b: O.Option<string[]>, a) => {
-                return pipe(
-                    b,
-                    O.fold(
-                        () => pipe(
-                            a,
-                            O.fromPredicate(el => el == `--${optName}`),
-                            O.map(() => [])
-                        ),
-                        y => O.some(y.length < 1 ? y.concat(a) : y)
-                    )
-                )
-            }
-        )
-    )
-}
-
-describe("getOpt2", () => {
-    test("single option, option string only", () => {
-        expect(getOpt2(["--o1", "val1"])("o1")).toEqual(O.some(["val1"]))
-    })
-    test("single option, option string in the middle of other elements", () => {
-        expect(getOpt2(["", "--o1", "val1", ""])("o1")).toEqual(O.some(["val1"]))
-    })
-    test("single option, option missing ", () => {
-        expect(getOpt2(["", "--o2", "val1", ""])("o1")).toEqual(O.none)
-    })
-})
 
 type CommandOption = { name: string, values: string[] }
 type CommandOptionDict = Record<string, string[]>
