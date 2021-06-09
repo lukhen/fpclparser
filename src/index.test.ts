@@ -275,9 +275,22 @@ describe("getOptionsDict", () => {
         expect(getOptionDict([])).toEqual({})
     })
 
-    test("CommandOpion list with one element", () => {
+    test("CommandOpion list with one flag option", () => {
         expect(getOptionDict([{ name: "o1", values: [] }])).toEqual({ o1: [] })
     })
+
+    test("CommandOpion list with one option with 2 values", () => {
+        expect(getOptionDict([{ name: "o1", values: ["value1", "value2"] }]))
+            .toEqual({ o1: ["value1", "value2"] })
+    })
+
+    test("CommandOpion list with multiple different options.", () => {
+        expect(getOptionDict([{ name: "o1", values: ["value1", "value2"] },
+        { name: "o2", values: [] },
+        { name: "o3", values: ["value3", "value4", "value5"] }]))
+            .toEqual({ o1: ["value1", "value2"], o2: [], o3: ["value3", "value4", "value5"] })
+    })
+
 
 })
 
