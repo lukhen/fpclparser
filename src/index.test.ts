@@ -100,7 +100,7 @@ function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Comm
         cms[argv[0]],
         O.fromNullable,
         E.fromOption(() => Error("Invalid command")),
-        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames)))
+        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt3(argv))(cm.optNames)))
     )
 }
 
