@@ -11,7 +11,7 @@ function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Comm
         cms[argv[0]],
         O.fromNullable,
         E.fromOption(() => Error("Invalid command")),
-        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt3(argv))(cm.optNames)))
+        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames)))
     )
 }
 
@@ -174,13 +174,9 @@ describe("getOptionsDict", () => {
         { name: "o1", values: ["value3", "value4", "value5"] }]))
             .toEqual({ o1: ["value1", "value2", "value3", "value4", "value5"], o2: [] })
     })
-
-
-
 })
 
-
-function getOpt3(argv: string[]): (optName: string) => O.Option<Array<string>> {
+function getOpt(argv: string[]): (optName: string) => O.Option<Array<string>> {
     return optName => O.fromNullable(getOptionDict(getAllOptionList(argv))[optName])
 }
 
@@ -255,9 +251,9 @@ describe("getAllOptionList", () => {
     })
 })
 
-describe("getOpt3", () => {
+describe("getOpt", () => {
     test("single option, option string only", () => {
-        expect(getOpt3(["--o1", "val1"])("o1")).toEqual(
+        expect(getOpt(["--o1", "val1"])("o1")).toEqual(
             O.fromNullable(getOptionDict(getAllOptionList(["--o1", "val1"]))["o1"]))
     })
 })
