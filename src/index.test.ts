@@ -291,6 +291,14 @@ describe("getOptionsDict", () => {
             .toEqual({ o1: ["value1", "value2"], o2: [], o3: ["value3", "value4", "value5"] })
     })
 
+    test("CommandOpion list with multiple options, 2 options with equal names.", () => {
+        expect(getOptionDict([{ name: "o1", values: ["value1", "value2"] },
+        { name: "o2", values: [] },
+        { name: "o1", values: ["value3", "value4", "value5"] }]))
+            .toEqual({ o1: ["value1", "value2", "value3", "value4", "value5"], o2: [] })
+    })
+
+
 
 })
 
