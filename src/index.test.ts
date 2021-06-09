@@ -3,7 +3,8 @@ import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
 import { sequenceT } from "fp-ts/lib/Apply"
 import * as A from "fp-ts/lib/Array"
-import { } from "fp-ts/lib/Record"
+import * as R from "fp-ts/lib/Record"
+
 
 interface Command1 {
     _tag: "comm1",
@@ -216,7 +217,7 @@ describe("getOpt2", () => {
 })
 
 type CommandOption = { name: string, values: string[] }
-type CommandOptionDict = { [optName: string]: string[] }
+type CommandOptionDict = Record<string, string[]>
 
 
 function getAllOptionList(argv: string[]): CommandOption[] {
@@ -262,14 +263,22 @@ describe("explodeTailTip", () => {
 
 
 // !!! wish
-function getOptionDict(q: CommandOption[]): CommandOptionDict {
-    return {}
+function getOptionDict(cos: CommandOption[]): CommandOptionDict {
+    return R.fromFoldableMap(
+        { concat: (x: string[], y: string[]) => [...x, ...y] },
+        A.Foldable
+    )(cos, co => [co.name, co.values])
 }
 
 describe("getOptionsDict", () => {
     test("empty CommandOpion list", () => {
         expect(getOptionDict([])).toEqual({})
     })
+
+    test("CommandOpion list with one element", () => {
+        expect(getOptionDict([{ name: "o1", values: [] }])).toEqual({ o1: [] })
+    })
+
 })
 
 
@@ -354,5 +363,4 @@ describe("getOpt3", () => {
             O.fromNullable(getOptionDict(getAllOptionList(["--o1", "val1"]))["o1"]))
     })
 })
-
 
