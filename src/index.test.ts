@@ -139,7 +139,6 @@ describe("explodeTailTip", () => {
 })
 
 
-// !!! wish
 function getOptionDict(cos: CommandOption[]): CommandOptionDict {
     return R.fromFoldableMap(
         { concat: (x: string[], y: string[]) => [...x, ...y] },
