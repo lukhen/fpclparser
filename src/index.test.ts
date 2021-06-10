@@ -12,7 +12,8 @@ import {
     CommandMetas,
     CommandOption,
     CommandOptionDict,
-    xcomm1
+    xcomm1,
+    xcomm2
 } from "./command"
 
 
@@ -46,6 +47,16 @@ describe("parseArgv2", () => {
                 getOptionDict(getAllOptionList(["xcomm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
             ))
     })
+
+    test("Command2 from xcomm2 constructor", () => {
+        expect(parseArgv2(["xcomm2", "arg1", "--o3", "value1", "--o4", "value2"],
+            [xcomm1, xcomm2])).toEqual(xcomm2(
+                "xcomm2",
+                "arg1",
+                getOptionDict(getAllOptionList(["xcomm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+            ))
+    })
+
 })
 
 

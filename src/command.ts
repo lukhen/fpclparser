@@ -86,12 +86,23 @@ export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
 export function xcomm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
-    return name == "comm1" ?
+    return name != "comm1" ?
         O.none
         : O.some(E.right({
             _tag: "comm1",
             arg: arg,
             o1: opts["o1"][0],
             o2: opts["o2"][0]
+        }))
+}
+
+export function xcomm2(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
+    return name != "comm2" ?
+        O.none
+        : O.some(E.right({
+            _tag: "comm2",
+            arg: arg,
+            o3: opts["o3"][0],
+            o4: opts["o4"][0]
         }))
 }
