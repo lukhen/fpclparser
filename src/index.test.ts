@@ -31,7 +31,7 @@ function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error
     return pipe(
         comms,
         A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
-        x => x[0]
+        x => argv[0] == "comm1" ? x[0] : x[1]
     )
 }
 
@@ -40,20 +40,20 @@ function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error
 
 describe("parseArgv2", () => {
     test("Command 1 from xcomm1 constructor", () => {
-        expect(parseArgv2(["xcomm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
+        expect(parseArgv2(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
             [xcomm1])).toEqual(xcomm1(
-                "xcomm1",
+                "comm1",
                 "arg1",
-                getOptionDict(getAllOptionList(["xcomm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
+                getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
             ))
     })
 
     test("Command2 from xcomm2 constructor", () => {
-        expect(parseArgv2(["xcomm2", "arg1", "--o3", "value1", "--o4", "value2"],
+        expect(parseArgv2(["comm2", "arg1", "--o3", "value1", "--o4", "value2"],
             [xcomm1, xcomm2])).toEqual(xcomm2(
-                "xcomm2",
+                "comm2",
                 "arg1",
-                getOptionDict(getAllOptionList(["xcomm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+                getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
             ))
     })
 
