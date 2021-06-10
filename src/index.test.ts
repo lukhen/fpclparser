@@ -3,10 +3,20 @@ import { pipe } from "fp-ts/lib/function"
 import * as O from "fp-ts/lib/Option"
 import * as A from "fp-ts/lib/Array"
 import * as R from "fp-ts/lib/Record"
-import { Command1, Command2, Command3, comm1, comm2, comm3, defaultCommandMetas, CommandMetas } from "./command"
+import {
+    Command,
+    comm1,
+    comm2,
+    comm3,
+    defaultCommandMetas,
+    CommandMetas,
+    CommandOption,
+    CommandOptionDict,
+    xcomm1
+} from "./command"
 
 
-function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command1 | Command2 | Command3> {
+function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command> {
     return pipe(
         cms[argv[0]],
         O.fromNullable,
@@ -14,6 +24,30 @@ function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Comm
         E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames)))
     )
 }
+type Comm = (name: string, arg: string, opts: CommandOptionDict) => O.Option<E.Either<Error, Command>>
+
+function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error, Command>> {
+    return pipe(
+        comms,
+        A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
+        x => x[0]
+    )
+}
+
+
+
+
+describe("parseArgv2", () => {
+    test("Command 1 from xcomm1 constructor", () => {
+        expect(parseArgv2(["xcomm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
+            [xcomm1])).toEqual(xcomm1(
+                "xcomm1",
+                "arg1",
+                getOptionDict(getAllOptionList(["xcomm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
+            ))
+    })
+})
+
 
 describe("comm1", () => {
     test("all options", () => {
@@ -91,10 +125,6 @@ describe("comm3, optional option", () => {
             .toEqual(E.left(Error("Option missing")))
     })
 })
-
-
-type CommandOption = { name: string, values: string[] }
-type CommandOptionDict = Record<string, string[]>
 
 
 function getAllOptionList(argv: string[]): CommandOption[] {

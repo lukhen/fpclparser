@@ -67,6 +67,8 @@ export function comm3(arg: string, req: O.Option<Array<string>>, opt: O.Option<A
     );
 }
 
+export type Command = Command1 | Command2 | Command3
+
 export type CommandMetas = {
     [key: string]: {
         constructor: (arg: string, ...opts: Array<O.Option<Array<string>>>) => E.Either<Error, Command1 | Command2 | Command3>,
@@ -78,4 +80,18 @@ export const defaultCommandMetas: CommandMetas = {
     comm1: { constructor: comm1, optNames: ["o1", "o2"] },
     comm2: { constructor: comm2, optNames: ["o3", "o4"] },
     comm3: { constructor: comm3, optNames: ["req", "opt"] },
+}
+
+export type CommandOption = { name: string, values: string[] }
+export type CommandOptionDict = Record<string, string[]>
+
+export function xcomm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
+    return name == "comm1" ?
+        O.none
+        : O.some(E.right({
+            _tag: "comm1",
+            arg: arg,
+            o1: opts["o1"][0],
+            o2: opts["o2"][0]
+        }))
 }
