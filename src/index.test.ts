@@ -31,7 +31,8 @@ function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error
     return pipe(
         comms,
         A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
-        x => argv[0] == "comm1" ? x[0] : x[1]
+        x => A.filter(O.isSome)(x),
+        x => A.isEmpty(x) ? O.none : x[0]
     )
 }
 
@@ -56,6 +57,12 @@ describe("parseArgv2", () => {
                 getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
             ))
     })
+
+    test("Bad command", () => {
+        expect(parseArgv2(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"],
+            [xcomm1, xcomm2])).toEqual(O.none)
+    })
+
 
 })
 
