@@ -106,3 +106,17 @@ export function xcomm2(name: string, arg: string, opts: CommandOptionDict): O.Op
             o4: opts["o4"][0]
         }))
 }
+
+export const comms = [xcomm1, xcomm2]
+
+export function fold<X>(handlers: {
+    onCommand1: (c1: Command1) => X,
+    onCommand2: (c2: Command2) => X,
+    onCommand3: (c3: Command3) => X
+}, c: Command): X {
+    return c._tag == "comm1"
+        ? handlers.onCommand1(c)
+        : c._tag == "comm2"
+            ? handlers.onCommand2(c) :
+            handlers.onCommand3(c)
+}
