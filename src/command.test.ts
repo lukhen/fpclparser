@@ -33,4 +33,29 @@ describe("Command fold", () => {
             )
         )
     })
+
+    test("onCommand1: command name valid, arg valid, option o1 is missing", () => {
+        pipe(
+            C.xcomm1("comm1", "arg", { o4: ["asd"], o2: ["qewr"] }),
+            O.map(E.map(
+                (c: C.Command) => C.fold<string>({
+                    onCommand1: c => c._tag,
+                    onCommand2: c => c._tag,
+                    onCommand3: c => c._tag,
+                }, c))
+
+            ),
+            O.fold(
+                () => { fail(["y"]) },
+                e => pipe(
+                    e,
+                    E.fold(
+                        er => { expect(er).toEqual(Error("Option o1 is missing")) },
+                        a => { fail(["x"]) }
+                    )
+                )
+            )
+        )
+    })
+
 })
