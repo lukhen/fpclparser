@@ -107,5 +107,13 @@ describe("Command fold", () => {
     })
 
 
+    test("onCommand1: command name invalid, arg valid, all options valid", () => {
+        pipe(
+            C.xcomm1("invalidcommadn", "arg", { o1: ["value3"], o2: ["value4"] }),
+            x => { expect(x).toEqual(O.none) }
+        )
+    })
+
+
 
 })
