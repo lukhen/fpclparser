@@ -45,10 +45,6 @@ describe("Command fold", () => {
 })
 
 describe("xcomm1", () => {
-    function fail(msg: NEA.NonEmptyArray<string>): void {
-        expect(msg).toEqual([])
-    }
-
     test("command name valid, arg valid, all options valid", () => {
         pipe(
             C.xcomm1("comm1", "arg", { o1: ["asd"], o2: ["qewr"] }),
