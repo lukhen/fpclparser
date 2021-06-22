@@ -59,21 +59,27 @@ function getReqCommand3Options(d: CommandOptionDict): Array<E.Either<Error, Comm
     ]
 }
 
+function ensureRequiredOptionsForCommand3(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
+    return pipe(
+        E.fromNullable(Error("Option req is missing"))(d["req"]),
+        E.map(_ => d)
+    )
+}
+
 export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
     return name != "comm3" ?
         O.none
         : O.some(pipe(
             opts,
-            getReqCommand3Options,
-            A.sequence(eitherApplicativeInstance),
+            ensureRequiredOptionsForCommand3,
             E.map(
                 a => ({
                     _tag: "comm3",
                     arg: arg,
-                    req: opts["req"][0],
+                    req: a["req"][0],
                     opt: pipe(
-                        O.fromNullable(opts["opt"]),
-                        O.map(opts => opts[0])
+                        O.fromNullable(a["opt"]),
+                        O.map(opt => opt[0])
                     )
                 })
             )
