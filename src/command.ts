@@ -46,7 +46,7 @@ function getCommand1Options(d: CommandOptionDict): Array<E.Either<Error, Command
     ]
 }
 
-export function xcomm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
+export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
     return name != "comm1" ?
         O.none
         : O.some(pipe(
@@ -64,7 +64,7 @@ export function xcomm1(name: string, arg: string, opts: CommandOptionDict): O.Op
         ))
 }
 
-export function xcomm2(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
+export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
     return name != "comm2" ?
         O.none
         : O.some(E.right({
@@ -75,7 +75,7 @@ export function xcomm2(name: string, arg: string, opts: CommandOptionDict): O.Op
         }))
 }
 
-export const comms = [xcomm1, xcomm2]
+export const comms = [comm1, comm2]
 
 export function fold<X>(handlers: {
     onCommand1: (c1: Command1) => X,

@@ -2,11 +2,7 @@ import * as E from "fp-ts/lib/Either"
 import * as O from "fp-ts/lib/Option"
 import {
     comm1,
-    comm2,
-    comm3,
-    defaultCommandMetas,
-    xcomm1,
-    xcomm2
+    comm2
 } from "./command"
 import { parseArgv2, getOptionDict, getAllOptionList, explodeTailTip, getOpt } from "./fpclparser"
 
@@ -14,7 +10,7 @@ import { parseArgv2, getOptionDict, getAllOptionList, explodeTailTip, getOpt } f
 describe("parseArgv2", () => {
     test("Command 1 from xcomm1 constructor", () => {
         expect(parseArgv2(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
-            [xcomm1])).toEqual(xcomm1(
+            [comm1])).toEqual(comm1(
                 "comm1",
                 "arg1",
                 getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
@@ -23,7 +19,7 @@ describe("parseArgv2", () => {
 
     test("Command2 from xcomm2 constructor", () => {
         expect(parseArgv2(["comm2", "arg1", "--o3", "value1", "--o4", "value2"],
-            [xcomm1, xcomm2])).toEqual(xcomm2(
+            [comm1, comm2])).toEqual(comm2(
                 "comm2",
                 "arg1",
                 getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
@@ -32,7 +28,7 @@ describe("parseArgv2", () => {
 
     test("Bad command", () => {
         expect(parseArgv2(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"],
-            [xcomm1, xcomm2])).toEqual(O.none)
+            [comm1, comm2])).toEqual(O.none)
     })
 
 
