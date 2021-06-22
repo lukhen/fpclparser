@@ -22,7 +22,7 @@ export interface Command3 {
     _tag: "comm3";
     arg: string;
     req: string;
-    opt: O.Option<Array<string>>;
+    opt: O.Option<string>;
 }
 
 export type Command = Command1 | Command2 | Command3
@@ -53,6 +53,32 @@ function getCommand2Options(d: CommandOptionDict): Array<E.Either<Error, Command
     ]
 }
 
+function getReqCommand3Options(d: CommandOptionDict): Array<E.Either<Error, CommandOption>> {
+    return [
+        E.map((el: string[]) => ({ name: "req", values: el }))(E.fromNullable(Error("Option req is missing"))(d["req"])),
+    ]
+}
+
+export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
+    return name != "comm3" ?
+        O.none
+        : O.some(pipe(
+            opts,
+            getReqCommand3Options,
+            A.sequence(eitherApplicativeInstance),
+            E.map(
+                a => ({
+                    _tag: "comm3",
+                    arg: arg,
+                    req: opts["req"][0],
+                    opt: pipe(
+                        O.fromNullable(opts["opt"]),
+                        O.map(opts => opts[0])
+                    )
+                })
+            )
+        ))
+}
 
 export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
     return name != "comm1" ?
