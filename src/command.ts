@@ -46,6 +46,14 @@ function getCommand1Options(d: CommandOptionDict): Array<E.Either<Error, Command
     ]
 }
 
+function getCommand2Options(d: CommandOptionDict): Array<E.Either<Error, CommandOption>> {
+    return [
+        E.map((el: string[]) => ({ name: "o3", values: el }))(E.fromNullable(Error("Option o3 is missing"))(d["o3"])),
+        E.map((el: string[]) => ({ name: "o4", values: el }))(E.fromNullable(Error("Option o4 is missing"))(d["o4"])),
+    ]
+}
+
+
 export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
     return name != "comm1" ?
         O.none
@@ -67,12 +75,19 @@ export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Opt
 export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
     return name != "comm2" ?
         O.none
-        : O.some(E.right({
-            _tag: "comm2",
-            arg: arg,
-            o3: opts["o3"][0],
-            o4: opts["o4"][0]
-        }))
+        : O.some(pipe(
+            opts,
+            getCommand2Options,
+            A.sequence(eitherApplicativeInstance),
+            E.map(
+                a => ({
+                    _tag: "comm2",
+                    arg: arg,
+                    o3: opts["o3"][0],
+                    o4: opts["o4"][0]
+                })
+            )
+        ))
 }
 
 export const comms = [comm1, comm2]
