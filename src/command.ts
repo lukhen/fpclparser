@@ -53,6 +53,23 @@ function getCommand2Options(d: CommandOptionDict): Array<E.Either<Error, Command
     ]
 }
 
+function ensureRequiredOptionsForCommand1(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
+    return pipe(
+        E.fromNullable(Error("Option o1 is missing"))(d["o1"]),
+        E.chain(_ => E.fromNullable(Error("Option o2 is missing"))(d["o2"])),
+        E.map(_ => d)
+    )
+}
+
+function ensureRequiredOptionsForCommand2(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
+    return pipe(
+        E.fromNullable(Error("Option o3 is missing"))(d["o3"]),
+        E.chain(_ => E.fromNullable(Error("Option o4 is missing"))(d["o4"])),
+        E.map(_ => d)
+    )
+}
+
+
 function ensureRequiredOptionsForCommand3(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
     return pipe(
         E.fromNullable(Error("Option req is missing"))(d["req"]),
@@ -85,14 +102,13 @@ export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Opt
         O.none
         : O.some(pipe(
             opts,
-            getCommand1Options,
-            A.sequence(eitherApplicativeInstance),
+            ensureRequiredOptionsForCommand1,
             E.map(
                 a => ({
                     _tag: "comm1",
                     arg: arg,
-                    o1: opts["o1"][0],
-                    o2: opts["o2"][0]
+                    o1: a["o1"][0],
+                    o2: a["o2"][0]
                 })
             )
         ))
@@ -103,14 +119,13 @@ export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Opt
         O.none
         : O.some(pipe(
             opts,
-            getCommand2Options,
-            A.sequence(eitherApplicativeInstance),
+            ensureRequiredOptionsForCommand2,
             E.map(
                 a => ({
                     _tag: "comm2",
                     arg: arg,
-                    o3: opts["o3"][0],
-                    o4: opts["o4"][0]
+                    o3: a["o3"][0],
+                    o4: a["o4"][0]
                 })
             )
         ))
