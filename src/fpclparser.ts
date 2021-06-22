@@ -4,19 +4,11 @@ import * as O from "fp-ts/lib/Option";
 import * as A from "fp-ts/lib/Array";
 import * as R from "fp-ts/lib/Record";
 import {
-    Command, CommandMetas,
+    Command,
     CommandOption,
     CommandOptionDict
 } from "./command";
 
-export function parseArgv(argv: Array<string>, cms: CommandMetas): E.Either<Error, Command> {
-    return pipe(
-        cms[argv[0]],
-        O.fromNullable,
-        E.fromOption(() => Error("Invalid command")),
-        E.chain(cm => cm.constructor(argv[1], ...A.map(getOpt(argv))(cm.optNames)))
-    );
-}
 type Comm = (name: string, arg: string, opts: CommandOptionDict) => O.Option<E.Either<Error, Command>>;
 
 export function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error, Command>> {

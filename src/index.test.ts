@@ -8,7 +8,7 @@ import {
     xcomm1,
     xcomm2
 } from "./command"
-import { parseArgv2, getOptionDict, getAllOptionList, parseArgv, explodeTailTip, getOpt } from "./fpclparser"
+import { parseArgv2, getOptionDict, getAllOptionList, explodeTailTip, getOpt } from "./fpclparser"
 
 
 describe("parseArgv2", () => {
@@ -37,86 +37,6 @@ describe("parseArgv2", () => {
 
 
 })
-
-
-describe("comm1", () => {
-    test("all options", () => {
-        const expectedCommand = comm1("lukh", O.some(["someoption1"]), O.some(["someoption2"]))
-        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1", "--o2", "someoption2"], defaultCommandMetas))
-            .toEqual(expectedCommand)
-    })
-
-    test("options in different order", () => {
-        const expectedCommand = comm1("arg2", O.some(["someoption11"]), O.some(["someoption22"]))
-        expect(parseArgv(["comm1", "arg2", "--o2", "someoption22", "--o1", "someoption11"], defaultCommandMetas))
-            .toEqual(expectedCommand)
-    })
-    test("missing option o2", () => {
-        expect(parseArgv(["comm1", "lukh", "--o1", "someoption1"], defaultCommandMetas))
-            .toEqual(E.left(Error("Option missing")))
-    })
-
-    test("missing option o1", () => {
-        expect(parseArgv(["comm1", "lukh", "--o2", "someoption2"], defaultCommandMetas))
-            .toEqual(E.left(Error("Option missing")))
-    })
-})
-
-describe("comm2", () => {
-    test("all options", () => {
-        const expectedCommand = comm2("lukh", O.some(["someoption3"]), O.some(["someoption4"]))
-        const actualCommand = parseArgv(["comm2", "lukh", "--o3", "someoption3", "--o4", "someoption4"], defaultCommandMetas)
-        expect(actualCommand)
-            .toEqual(expectedCommand)
-    })
-
-    test("options in different order", () => {
-        const expectedCommand = comm2("arg2", O.some(["someoption11"]), O.some(["someoption22"]))
-        expect(parseArgv(["comm2", "arg2", "--o4", "someoption22", "--o3", "someoption11"], defaultCommandMetas))
-            .toEqual(expectedCommand)
-    })
-    test("missing option o4", () => {
-        expect(parseArgv(["comm2", "lukh", "--o3", "someoption1"], defaultCommandMetas))
-            .toEqual(E.left(Error("Option missing")))
-    })
-
-    test("missing option o3", () => {
-        expect(parseArgv(["comm2", "lukh", "--o4", "someoption2"], defaultCommandMetas))
-            .toEqual(E.left(Error("Option missing")))
-    })
-})
-
-describe("wrong command", () => {
-    test("should produce E.left(error)", () => {
-        expect(parseArgv(["wrongcomm", "lukh", "--o1", "someoption1", "--o2", "someoption2"], defaultCommandMetas))
-            .toEqual(E.left(Error("Invalid command")))
-    })
-})
-
-
-describe("comm3, optional option", () => {
-    test("optional option present", () => {
-        const expectedCommand = comm3("somearg", O.some(["required"]), O.some(["optional"]))
-        const actualCommand = parseArgv(["comm3", "somearg", "--req", "required", "--opt", "optional"], defaultCommandMetas)
-        expect(actualCommand)
-            .toEqual(expectedCommand)
-    })
-
-    test("optional option missing", () => {
-        const expectedCommand = comm3("somearg", O.some(["required"]), O.none)
-        const actualCommand = parseArgv(["comm3", "somearg", "--req", "required"], defaultCommandMetas)
-        expect(actualCommand)
-            .toEqual(expectedCommand)
-    })
-
-    test("optional option present, required option missing", () => {
-        const actualCommand = parseArgv(["comm3", "somearg", "--opt", "optional"], defaultCommandMetas)
-        expect(actualCommand)
-            .toEqual(E.left(Error("Option missing")))
-    })
-})
-
-
 
 describe("explodeTailTip", () => {
     test("different", () => {
