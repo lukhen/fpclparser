@@ -53,12 +53,6 @@ function getCommand2Options(d: CommandOptionDict): Array<E.Either<Error, Command
     ]
 }
 
-function getReqCommand3Options(d: CommandOptionDict): Array<E.Either<Error, CommandOption>> {
-    return [
-        E.map((el: string[]) => ({ name: "req", values: el }))(E.fromNullable(Error("Option req is missing"))(d["req"])),
-    ]
-}
-
 function ensureRequiredOptionsForCommand3(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
     return pipe(
         E.fromNullable(Error("Option req is missing"))(d["req"]),
