@@ -32,27 +32,34 @@ export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
 function ensureRequiredOptionsForCommand1(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return pipe(
-        E.fromNullable(Error("Option o1 is missing"))(d["o1"]),
-        E.chain(_ => E.fromNullable(Error("Option o2 is missing"))(d["o2"])),
+    return ensureOpts(["o1", "o2"])(d)
+}
+
+const e: Applicative2<E.URI> = {
+    URI: E.URI,
+    ap: (fab, fa) => E.ap(fa)(fab),
+    map: (fa, f) => E.map(f)(fa),
+    of: E.of
+}
+
+
+function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
+    return d => pipe(
+        optNames,
+        A.map(optName => [optName, d[optName]] as [string, string[] | undefined]),
+        A.map(([optName, opt]) => E.fromNullable(Error(`Option ${optName} is missing`))(opt)),
+        A.sequence(e),
         E.map(_ => d)
-    )
+    );
 }
 
 function ensureRequiredOptionsForCommand2(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return pipe(
-        E.fromNullable(Error("Option o3 is missing"))(d["o3"]),
-        E.chain(_ => E.fromNullable(Error("Option o4 is missing"))(d["o4"])),
-        E.map(_ => d)
-    )
+    return ensureOpts(["o3", "o4"])(d)
 }
 
 
 function ensureRequiredOptionsForCommand3(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return pipe(
-        E.fromNullable(Error("Option req is missing"))(d["req"]),
-        E.map(_ => d)
-    )
+    return ensureOpts(["req"])(d)
 }
 
 export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
