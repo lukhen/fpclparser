@@ -31,17 +31,12 @@ export type Command = Command1 | Command2 | Command3
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
-function ensureRequiredOptionsForCommand1(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return ensureOpts(["o1", "o2"])(d)
-}
-
 const e: Applicative2<E.URI> = {
     URI: E.URI,
     ap: (fab, fa) => E.ap(fa)(fab),
     map: (fa, f) => E.map(f)(fa),
     of: E.of
 }
-
 
 function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
     return d => pipe(
@@ -53,21 +48,12 @@ function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Erro
     );
 }
 
-function ensureRequiredOptionsForCommand2(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return ensureOpts(["o3", "o4"])(d)
-}
-
-
-function ensureRequiredOptionsForCommand3(d: CommandOptionDict): E.Either<Error, CommandOptionDict> {
-    return ensureOpts(["req"])(d)
-}
-
 export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
     return name != "comm3" ?
         O.none
         : O.some(pipe(
             opts,
-            ensureRequiredOptionsForCommand3,
+            ensureOpts(["req"]),
             E.map(
                 a => ({
                     _tag: "comm3",
@@ -87,7 +73,7 @@ export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Opt
         O.none
         : O.some(pipe(
             opts,
-            ensureRequiredOptionsForCommand1,
+            ensureOpts(["o1", "o2"]),
             E.map(
                 a => ({
                     _tag: "comm1",
@@ -104,7 +90,7 @@ export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Opt
         O.none
         : O.some(pipe(
             opts,
-            ensureRequiredOptionsForCommand2,
+            ensureOpts(["o3", "o4"]),
             E.map(
                 a => ({
                     _tag: "comm2",
