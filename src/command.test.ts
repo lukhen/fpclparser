@@ -7,6 +7,35 @@ import * as NEA from "fp-ts/lib/NonEmptyArray"
 
 describe("Command fold", () => {
 
+    test("should produce none string", () => {
+        pipe(
+            O.none,
+            C.fold<string>({
+                onNone: () => "none",
+                onError: (e) => "error",
+                onCommand1: c => "command1",
+                onCommand2: c => "command2",
+                onCommand3: c => "command3",
+            }),
+            x => { expect(x).toEqual("none") }
+        )
+    })
+
+    test("should produce error string", () => {
+        pipe(
+            O.some(E.left(Error(""))),
+            C.fold<string>({
+                onNone: () => "none",
+                onError: (e) => "error",
+                onCommand1: c => "command1",
+                onCommand2: c => "command2",
+                onCommand3: c => "command3",
+            }),
+            x => { expect(x).toEqual("error") }
+        )
+    })
+
+
     test("should produce command1 string for Command1", () => {
         pipe(
             O.some(E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as C.Command1)),
