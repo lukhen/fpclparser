@@ -11,7 +11,7 @@ import {
 
 type Comm = (name: string, arg: string, opts: CommandOptionDict) => Command;
 
-export function parseArgv2(argv: Array<string>, comms: Comm[]): Command {
+export function parseArgv(argv: Array<string>, comms: Comm[]): Command {
     return pipe(
         comms,
         A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
