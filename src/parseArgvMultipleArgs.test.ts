@@ -47,7 +47,7 @@ export function getArgs(argv: string[]): string[] {
             O.fromPredicate(() => ss.length > 0),
             O.fold(
                 () => [],
-                ss => ss[0].startsWith("--")
+                ss => isOption(ss[0])
                     ? sliceToTheFirstOption([])
                     : [ss[0]].concat(sliceToTheFirstOption(ss.slice(1)))
             )
@@ -112,3 +112,7 @@ describe("getArgs", () => {
 
 
 })
+
+function isOption(s: string) {
+    return s.startsWith("--");
+}
