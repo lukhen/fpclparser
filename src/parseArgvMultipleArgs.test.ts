@@ -15,7 +15,7 @@ interface CommandWithMultipleArgs {
 
 type Command = O.Option<E.Either<Error, CommandWithMultipleArgs>>
 
-type CommMultipleArgs = (name: string, arg: string[], opts: CommandOptionDict) => Command;
+type CommMultipleArgs = (name: string, args: string[], opts: CommandOptionDict) => Command;
 
 function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): Command {
     return pipe(
@@ -27,7 +27,7 @@ function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): 
 }
 
 // !!!
-const commWithArgList: CommMultipleArgs = (name, arg, opts) => {
+const commWithArgList: CommMultipleArgs = (name, args, opts) => {
     return O.some(E.right({
         _tag: "commwithmultipleargs",
         arg1: "",
