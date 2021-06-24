@@ -39,7 +39,7 @@ const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
 
 // !!!
 export function getArgs(argv: string[]): string[] {
-    return [argv[1]]
+    return []
 }
 
 describe("parseArgvMultipleArgs", () => {
@@ -51,3 +51,12 @@ describe("parseArgvMultipleArgs", () => {
     })
 })
 
+
+describe("getArgs", () => {
+    test("empty argv", () => {
+        const argv: string[] = []
+        expect(getArgs(argv)).toEqual(
+            []
+        )
+    })
+})
