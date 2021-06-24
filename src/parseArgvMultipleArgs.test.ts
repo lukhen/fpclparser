@@ -44,7 +44,7 @@ export function getArgs(argv: string[]): string[] {
         O.fromPredicate(() => argv.length > 1),
         O.fold(
             () => [],
-            argv => [argv[1]]
+            argv => argv.slice(1)
         )
     )
 }
@@ -80,5 +80,13 @@ describe("getArgs", () => {
             ["arg"]
         )
     })
+
+    test("command name + 2 args", () => {
+        const argv: string[] = ["commandname", "arg1", "arg2"]
+        expect(getArgs(argv)).toEqual(
+            ["arg1", "arg2"]
+        )
+    })
+
 
 })
