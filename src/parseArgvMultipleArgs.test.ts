@@ -37,14 +37,29 @@ const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
     }))
 }
 
+
 // !!!
 export function getArgs(argv: string[]): string[] {
+
+    function sliceToTheFirstOption(ss: string[]): string[] {
+        return pipe(
+            ss,
+            O.fromPredicate(() => ss.length > 0),
+            O.fold(
+                () => [],
+                ss => ss[0].startsWith("--")
+                    ? sliceToTheFirstOption([])
+                    : [ss[0]].concat(sliceToTheFirstOption(ss.slice(1)))
+            )
+        )
+    }
+
     return pipe(
         argv,
         O.fromPredicate(() => argv.length > 1),
         O.fold(
             () => [],
-            argv => argv.slice(1)
+            argv => sliceToTheFirstOption(argv.slice(1))
         )
     )
 }
@@ -85,6 +100,13 @@ describe("getArgs", () => {
         const argv: string[] = ["commandname", "arg1", "arg2"]
         expect(getArgs(argv)).toEqual(
             ["arg1", "arg2"]
+        )
+    })
+
+    test("command name + 1 arg + 1 opt", () => {
+        const argv: string[] = ["commandname", "arg", "--opt", "val"]
+        expect(getArgs(argv)).toEqual(
+            ["arg"]
         )
     })
 
