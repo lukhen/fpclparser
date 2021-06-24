@@ -44,9 +44,10 @@ export function getArgs(argv: string[]): string[] {
 
 describe("parseArgvMultipleArgs", () => {
     test("commWithMultipleArgs", () => {
-        const argv: string[] = []
+        const argv: string[] = ["commWithMultipleArgs", "arg1", "arg2", "--opt1", "--opt2"]
         expect(parseArgvMultipleArgs(["commwithmultipleargs"], [commWithMultipleArgs])).toEqual(
             commWithMultipleArgs("commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv)))
         )
     })
 })
+
