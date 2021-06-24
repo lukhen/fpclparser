@@ -59,4 +59,12 @@ describe("getArgs", () => {
             []
         )
     })
+
+    test("empty argv", () => {
+        const argv: string[] = ["commandname"]
+        expect(getArgs(argv)).toEqual(
+            []
+        )
+    })
+
 })
