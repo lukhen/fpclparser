@@ -25,9 +25,7 @@ export interface Command3 {
     opt: O.Option<string>;
 }
 
-export type Command = Command1 | Command2 | Command3
-
-
+export type Command = O.Option<E.Either<Error, Command1 | Command2 | Command3>>
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
@@ -102,16 +100,30 @@ export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Opt
         ))
 }
 
-export const comms = [comm1, comm2]
+export const comms = [comm1, comm2, comm3]
 
 export function fold<X>(handlers: {
+    onNone: () => X,
+    onError: (e: Error) => X,
     onCommand1: (c1: Command1) => X,
     onCommand2: (c2: Command2) => X,
     onCommand3: (c3: Command3) => X
-}, c: Command): X {
-    return c._tag == "comm1"
-        ? handlers.onCommand1(c)
-        : c._tag == "comm2"
-            ? handlers.onCommand2(c) :
-            handlers.onCommand3(c)
+}): (c: Command) => X {
+    return c => pipe(
+        c,
+        O.fold(
+            handlers.onNone,
+            E.fold(
+                handlers.onError,
+                c => c._tag == "comm1"
+                    ? handlers.onCommand1(c)
+                    : c._tag == "comm2"
+                        ? handlers.onCommand2(c) :
+                        c._tag == "comm3"
+                            ? handlers.onCommand3(c) :
+                            handlers.onCommand3(c)
+            )
+        )
+    )
+
 }

@@ -9,36 +9,42 @@ describe("Command fold", () => {
 
     test("should produce command1 string for Command1", () => {
         pipe(
-            { _tag: "comm1", arg: "arg", o1: "", o2: "" } as C.Command1,
-            c => C.fold<string>({
+            O.some(E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as C.Command1)),
+            C.fold<string>({
+                onNone: () => "none",
+                onError: (e) => "error",
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
-            }, c),
+            }),
             x => { expect(x).toEqual("command1") }
         )
     })
 
     test("should produce command2 string for Command2", () => {
         pipe(
-            { _tag: "comm2", arg: "arg", o3: "", o4: "" } as C.Command2,
-            c => C.fold<string>({
+            O.some(E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as C.Command2)),
+            C.fold<string>({
+                onNone: () => "none",
+                onError: (e) => "error",
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
-            }, c),
+            }),
             x => { expect(x).toEqual("command2") }
         )
     })
 
     test("should produce command3 string for Command3", () => {
         pipe(
-            { _tag: "comm3", arg: "arg", req: "", opt: O.none } as C.Command3,
-            c => C.fold<string>({
+            O.some(E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as C.Command3)),
+            C.fold<string>({
+                onNone: () => "none",
+                onError: (e) => "error",
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
-            }, c),
+            }),
             x => { expect(x).toEqual("command3") }
         )
     })

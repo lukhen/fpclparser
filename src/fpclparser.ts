@@ -4,14 +4,14 @@ import * as O from "fp-ts/lib/Option";
 import * as A from "fp-ts/lib/Array";
 import * as R from "fp-ts/lib/Record";
 import {
-    Command,
     CommandOption,
-    CommandOptionDict
+    CommandOptionDict,
+    Command
 } from "./command";
 
-type Comm = (name: string, arg: string, opts: CommandOptionDict) => O.Option<E.Either<Error, Command>>;
+type Comm = (name: string, arg: string, opts: CommandOptionDict) => Command;
 
-export function parseArgv2(argv: Array<string>, comms: Comm[]): O.Option<E.Either<Error, Command>> {
+export function parseArgv2(argv: Array<string>, comms: Comm[]): Command {
     return pipe(
         comms,
         A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
