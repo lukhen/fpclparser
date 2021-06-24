@@ -27,7 +27,7 @@ function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): 
 }
 
 // !!!
-const commWithArgList: CommMultipleArgs = (name, args, opts) => {
+const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
     return O.some(E.right({
         _tag: "commwithmultipleargs",
         arg1: "",
@@ -42,11 +42,11 @@ export function getArgs(argv: string[]): string[] {
     return [argv[1]]
 }
 
-describe("", () => {
-    test("", () => {
+describe("parseArgvMultipleArgs", () => {
+    test("commWithMultipleArgs", () => {
         const argv: string[] = []
-        expect(parseArgvMultipleArgs(["commwithmultipleargs"], [commWithArgList])).toEqual(
-            commWithArgList("commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv)))
+        expect(parseArgvMultipleArgs(["commwithmultipleargs"], [commWithMultipleArgs])).toEqual(
+            commWithMultipleArgs("commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv)))
         )
     })
 })
