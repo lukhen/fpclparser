@@ -37,8 +37,6 @@ const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
     }))
 }
 
-
-// !!!
 export function getArgs(argv: string[]): string[] {
 
     function sliceToTheFirstOption(ss: string[]): string[] {
@@ -110,6 +108,21 @@ describe("getArgs", () => {
         )
     })
 
+    test("command name + 0 args + 2 opts", () => {
+        const argv: string[] = ["commandname", "--opt", "val1", "val2"]
+        expect(getArgs(argv)).toEqual(
+            []
+        )
+    })
+
+    test("command name + multiple args + multiple commands opts", () => {
+        const argv: string[] = ["commandname", "arg1", "arg2", "arg3", "arg4", "arg5",
+            "--opt1", "val1", "val2",
+            "--opt2", "val1", "val2"]
+        expect(getArgs(argv)).toEqual(
+            ["arg1", "arg2", "arg3", "arg4", "arg5"]
+        )
+    })
 
 })
 
