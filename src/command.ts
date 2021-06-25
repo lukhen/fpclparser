@@ -36,7 +36,7 @@ const e: Applicative2<E.URI> = {
     of: E.of
 }
 
-function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
+export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
     return d => pipe(
         optNames,
         A.map(optName => [optName, d[optName]] as [string, string[] | undefined]),
