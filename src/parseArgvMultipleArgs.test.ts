@@ -1,74 +1,8 @@
-import { getAllOptionList, getOptionDict } from "./fpclparser"
-import { CommandOptionDict, ensureOpts } from "./command"
+import { getAllOptionList, getOptionDict, parseArgvMultipleArgs, getArgs } from "./fpclparser"
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
-import * as A from "fp-ts/lib/Array";
-import { sequenceT } from "fp-ts/lib/Apply"
-import { Applicative2 } from "fp-ts/lib/Applicative"
-
-interface CommandWithMultipleArgs {
-    _tag: "commwithmultipleargs",
-    arg1: string,
-    arg2: string,
-    opt1: string,
-    opt2: string
-}
-
-type Command = O.Option<E.Either<Error, CommandWithMultipleArgs>>
-
-type CommMultipleArgs = (name: string, args: string[], opts: CommandOptionDict) => Command;
-
-function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): Command {
-    return pipe(
-        comms,
-        A.map(comm => comm(argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv)))),
-        x => A.filter(O.isSome)(x),
-        x => A.isEmpty(x) ? O.none : x[0]
-    );
-}
-
-const e: Applicative2<E.URI> = {
-    URI: E.URI,
-    ap: (fab, fa) => E.ap(fa)(fab),
-    map: (fa, f) => E.map(f)(fa),
-    of: E.of
-}
-
-function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
-    return ss => pipe(
-        ss,
-        E.fromPredicate(
-            (x) => x.length == 2,
-            () => Error("Invalid number of args")
-        )
-    )
-}
-
-const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
-    return name != "commwithmultipleargs" ?
-        O.none
-        : O.some(pipe(
-            [args, opts] as [string[], CommandOptionDict],
-            ([args, opts]) => [
-                ensureSize(2)(args),
-                ensureOpts(["opt1", "opt2"])(opts)] as [
-                    E.Either<Error, string[]>,
-                    E.Either<Error, CommandOptionDict>
-                ],
-            (x) => sequenceT(e)(...x),
-            E.map(
-                ([args, opts]: [any, any]) => ({
-                    _tag: "commwithmultipleargs",
-                    arg1: args[0],
-                    arg2: args[1],
-                    opt1: opts["opt1"][0],
-                    opt2: opts["opt2"][0]
-                })
-            )
-        ))
-}
-
+import { commWithMultipleArgs, CommandWithMultipleArgs } from "./command";
 
 describe("commWithMultipleArgs", () => {
     test("command name valid, args valid, all options valid", () => {
@@ -150,32 +84,6 @@ describe("commWithMultipleArgs", () => {
 })
 
 
-
-export function getArgs(argv: string[]): string[] {
-
-    function sliceToTheFirstOption(ss: string[]): string[] {
-        return pipe(
-            ss,
-            O.fromPredicate(() => ss.length > 0),
-            O.fold(
-                () => [],
-                ss => isOption(ss[0])
-                    ? sliceToTheFirstOption([])
-                    : [ss[0]].concat(sliceToTheFirstOption(ss.slice(1)))
-            )
-        )
-    }
-
-    return pipe(
-        argv,
-        O.fromPredicate(() => argv.length > 1),
-        O.fold(
-            () => [],
-            argv => sliceToTheFirstOption(argv.slice(1))
-        )
-    )
-}
-
 describe("parseArgvMultipleArgs", () => {
     test("commWithMultipleArgs", () => {
         const argv: string[] = ["commwithmultipleargs", "arg1", "arg2", "--opt1", "opt1-value", "--opt2", "opt2-value"]
@@ -239,7 +147,3 @@ describe("getArgs", () => {
     })
 
 })
-
-function isOption(s: string) {
-    return s.startsWith("--");
-}

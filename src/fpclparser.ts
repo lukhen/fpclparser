@@ -6,10 +6,21 @@ import * as R from "fp-ts/lib/Record";
 import {
     CommandOption,
     CommandOptionDict,
-    Command
+    Command,
+    CommandX
 } from "./command";
 
 type Comm = (name: string, arg: string, opts: CommandOptionDict) => Command;
+export type CommMultipleArgs = (name: string, args: string[], opts: CommandOptionDict) => CommandX;
+
+export function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): CommandX {
+    return pipe(
+        comms,
+        A.map(comm => comm(argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv)))),
+        x => A.filter(O.isSome)(x),
+        x => A.isEmpty(x) ? O.none : x[0]
+    );
+}
 
 export function parseArgv(argv: Array<string>, comms: Comm[]): Command {
     return pipe(
@@ -58,4 +69,33 @@ export function getOptionDict(cos: CommandOption[]): CommandOptionDict {
         { concat: (x: string[], y: string[]) => [...x, ...y] },
         A.Foldable
     )(cos, co => [co.name, co.values]);
+}
+
+export function getArgs(argv: string[]): string[] {
+
+    function sliceToTheFirstOption(ss: string[]): string[] {
+        return pipe(
+            ss,
+            O.fromPredicate(() => ss.length > 0),
+            O.fold(
+                () => [],
+                ss => isOption(ss[0])
+                    ? sliceToTheFirstOption([])
+                    : [ss[0]].concat(sliceToTheFirstOption(ss.slice(1)))
+            )
+        );
+    }
+
+    return pipe(
+        argv,
+        O.fromPredicate(() => argv.length > 1),
+        O.fold(
+            () => [],
+            argv => sliceToTheFirstOption(argv.slice(1))
+        )
+    );
+}
+
+function isOption(s: string) {
+    return s.startsWith("--");
 }

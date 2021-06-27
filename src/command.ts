@@ -4,6 +4,7 @@ import * as O from "fp-ts/lib/Option";
 import { sequenceT } from "fp-ts/lib/Apply";
 import * as A from "fp-ts/lib/Array"
 import { Applicative2 } from "fp-ts/lib/Applicative";
+import { CommMultipleArgs } from "./fpclparser"
 
 export interface Command1 {
     _tag: "comm1";
@@ -24,7 +25,15 @@ export interface Command3 {
     req: string;
     opt: O.Option<string>;
 }
+export interface CommandWithMultipleArgs {
+    _tag: "commwithmultipleargs";
+    arg1: string;
+    arg2: string;
+    opt1: string;
+    opt2: string;
+}
 
+export type CommandX = O.Option<E.Either<Error, CommandWithMultipleArgs>>;
 export type Command = O.Option<E.Either<Error, Command1 | Command2 | Command3>>
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
@@ -46,6 +55,17 @@ export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Eith
     );
 }
 
+function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
+    return ss => pipe(
+        ss,
+        E.fromPredicate(
+            (x) => x.length == 2,
+            () => Error("Invalid number of args")
+        )
+    );
+}
+
+
 export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
     return name != "comm3" ?
         O.none
@@ -65,6 +85,32 @@ export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Opt
             )
         ))
 }
+
+export const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
+    return name != "commwithmultipleargs" ?
+        O.none
+        : O.some(pipe(
+            [args, opts] as [string[], CommandOptionDict],
+            ([args, opts]) => [
+                ensureSize(2)(args),
+                ensureOpts(["opt1", "opt2"])(opts)
+            ] as [
+                    E.Either<Error, string[]>,
+                    E.Either<Error, CommandOptionDict>
+                ],
+            (x) => sequenceT(e)(...x),
+            E.map(
+                ([args, opts]: [any, any]) => ({
+                    _tag: "commwithmultipleargs",
+                    arg1: args[0],
+                    arg2: args[1],
+                    opt1: opts["opt1"][0],
+                    opt2: opts["opt2"][0]
+                })
+            )
+        ));
+};
+
 
 export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
     return name != "comm1" ?
