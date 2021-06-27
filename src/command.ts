@@ -59,7 +59,7 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
     return ss => pipe(
         ss,
         E.fromPredicate(
-            (x) => x.length == 2,
+            (x) => x.length == n,
             () => Error("Invalid number of args")
         )
     );
