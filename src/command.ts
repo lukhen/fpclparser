@@ -34,7 +34,6 @@ export interface Command4 {
 }
 
 export type CommandX = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
-export type Command = O.Option<E.Either<Error, Command1 | Command2 | Command3>>
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 

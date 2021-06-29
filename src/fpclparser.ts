@@ -6,11 +6,9 @@ import * as R from "fp-ts/lib/Record";
 import {
     CommandOption,
     CommandOptionDict,
-    Command,
     CommandX
 } from "./command";
 
-type Comm = (name: string, arg: string, opts: CommandOptionDict) => Command;
 export type CommMultipleArgs = (name: string, args: string[], opts: CommandOptionDict) => CommandX;
 
 export function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): CommandX {
@@ -22,14 +20,6 @@ export function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleAr
     );
 }
 
-export function parseArgv(argv: Array<string>, comms: Comm[]): Command {
-    return pipe(
-        comms,
-        A.map(comm => comm(argv[0], argv[1], getOptionDict(getAllOptionList(argv)))),
-        x => A.filter(O.isSome)(x),
-        x => A.isEmpty(x) ? O.none : x[0]
-    );
-}
 
 export function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(

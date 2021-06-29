@@ -4,7 +4,7 @@ import {
     comm1,
     comm2
 } from "./command"
-import { parseArgv, getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgvMultipleArgs } from "./fpclparser"
+import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgvMultipleArgs } from "./fpclparser"
 
 
 describe("parseArgv", () => {
