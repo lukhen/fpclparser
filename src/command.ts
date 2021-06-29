@@ -25,15 +25,15 @@ export interface Command3 {
     req: string;
     opt: O.Option<string>;
 }
-export interface CommandWithMultipleArgs {
-    _tag: "commwithmultipleargs";
+export interface Command4 {
+    _tag: "comm4";
     arg1: string;
     arg2: string;
     opt1: string;
     opt2: string;
 }
 
-export type CommandX = O.Option<E.Either<Error, CommandWithMultipleArgs | Command1 | Command2 | Command3>>;
+export type CommandX = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
 export type Command = O.Option<E.Either<Error, Command1 | Command2 | Command3>>
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
@@ -109,7 +109,7 @@ export const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
             (x) => sequenceT(e)(...x),
             E.map(
                 ([args, opts]: [any, any]) => ({
-                    _tag: "commwithmultipleargs",
+                    _tag: "comm4",
                     arg1: args[0],
                     arg2: args[1],
                     opt1: opts["opt1"][0],
@@ -176,7 +176,7 @@ export function fold<X>(handlers: {
     onCommand1: (c1: Command1) => X,
     onCommand2: (c2: Command2) => X,
     onCommand3: (c3: Command3) => X,
-    onCommand4: (c4: CommandWithMultipleArgs) => X
+    onCommand4: (c4: Command4) => X
 }): (c: CommandX) => X {
     return c => pipe(
         c,

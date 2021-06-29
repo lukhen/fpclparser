@@ -2,7 +2,7 @@ import { getAllOptionList, getOptionDict, parseArgvMultipleArgs, getArgs } from 
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
-import { commWithMultipleArgs, CommandWithMultipleArgs } from "./command";
+import { commWithMultipleArgs, Command4 } from "./command";
 
 describe("commWithMultipleArgs", () => {
     test("command name valid, args valid, all options valid", () => {
@@ -12,12 +12,12 @@ describe("commWithMultipleArgs", () => {
                 expect(a).toEqual(
                     O.some(
                         E.right({
-                            _tag: "commwithmultipleargs",
+                            _tag: "comm4",
                             arg1: "arg1",
                             arg2: "arg2",
                             opt1: "asd",
                             opt2: "qewr"
-                        } as CommandWithMultipleArgs)))
+                        } as Command4)))
             }
         )
     })
