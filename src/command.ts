@@ -65,7 +65,7 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
 }
 
 
-export function comm3(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
+export const comm3: CommandConstructor = (name, args, opts) => {
     return name != "comm3" ?
         O.none
         : O.some(pipe(
@@ -119,7 +119,7 @@ export const comm4: CommandConstructor = (name, args, opts) => {
 };
 
 
-export function comm1(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
+export const comm1: CommandConstructor = (name, args, opts) => {
     return name != "comm1" ?
         O.none
         : O.some(pipe(
@@ -143,7 +143,7 @@ export function comm1(name: string, args: string[], opts: CommandOptionDict): O.
         ));
 }
 
-export function comm2(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
+export const comm2: CommandConstructor = (name, args, opts) => {
     return name != "comm2" ?
         O.none
         : O.some(pipe(
