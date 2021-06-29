@@ -4,7 +4,6 @@ import * as O from "fp-ts/lib/Option";
 import { sequenceT } from "fp-ts/lib/Apply";
 import * as A from "fp-ts/lib/Array"
 import { Applicative2 } from "fp-ts/lib/Applicative";
-import { CommandConstructor } from "./fpclparser"
 
 export interface Command1 {
     _tag: "comm1";
@@ -34,6 +33,7 @@ export interface Command4 {
 }
 
 export type Command = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
+export type CommandConstructor = (name: string, args: string[], opts: CommandOptionDict) => Command;
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 

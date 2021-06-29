@@ -6,10 +6,11 @@ import * as R from "fp-ts/lib/Record";
 import {
     CommandOption,
     CommandOptionDict,
-    Command
+    Command,
+    CommandConstructor
 } from "./command";
 
-export type CommandConstructor = (name: string, args: string[], opts: CommandOptionDict) => Command;
+
 
 export function parseArgv(argv: Array<string>, comms: CommandConstructor[]): Command {
     return pipe(
