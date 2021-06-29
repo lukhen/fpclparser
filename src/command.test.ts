@@ -82,7 +82,7 @@ describe("Command fold", () => {
 describe("comm1", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
-            C.comm1("comm1", "arg", { o1: ["asd"], o2: ["qewr"] }),
+            C.comm1("comm1", ["arg"], { o1: ["asd"], o2: ["qewr"] }),
             a => {
                 expect(a).toEqual(
                     O.some(
@@ -98,21 +98,21 @@ describe("comm1", () => {
 
     test("command name valid, arg valid, option o1 is missing", () => {
         pipe(
-            C.comm1("comm1", "arg", { o4: ["asd"], o2: ["qewr"] }),
+            C.comm1("comm1", ["arg"], { o4: ["asd"], o2: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o1 is missing")))) }
         )
     })
 
     test("command name valid, arg valid, option o2 is missing", () => {
         pipe(
-            C.comm1("comm1", "arg", { o1: ["asd"], o5: ["qewr"] }),
+            C.comm1("comm1", ["arg"], { o1: ["asd"], o5: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o2 is missing")))) }
         )
     })
 
     test("command name valid, arg valid, option o1 and o2 are missing", () => {
         pipe(
-            C.comm1("comm1", "arg", {}),
+            C.comm1("comm1", ["arg"], {}),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o1 is missing")))) }
         )
     })
@@ -120,7 +120,7 @@ describe("comm1", () => {
 
     test("command name invalid, arg valid, all options valid", () => {
         pipe(
-            C.comm1("invalidcommadn", "arg", { o1: ["value3"], o2: ["value4"] }),
+            C.comm1("invalidcommadn", ["arg"], { o1: ["value3"], o2: ["value4"] }),
             x => { expect(x).toEqual(O.none) }
         )
     })
@@ -129,7 +129,7 @@ describe("comm1", () => {
 describe("comm2", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
-            C.comm2("comm2", "arg", { o3: ["asd"], o4: ["qewr"] }),
+            C.comm2("comm2", ["arg"], { o3: ["asd"], o4: ["qewr"] }),
             a => {
                 expect(a).toEqual(
                     O.some(
@@ -145,21 +145,21 @@ describe("comm2", () => {
 
     test("command name valid, arg valid, option o3 is missing", () => {
         pipe(
-            C.comm2("comm2", "arg", { o100: ["asd"], o4: ["qewr"] }),
+            C.comm2("comm2", ["arg"], { o100: ["asd"], o4: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o3 is missing")))) }
         )
     })
 
     test("command name valid, arg valid, option o4 is missing", () => {
         pipe(
-            C.comm2("comm2", "arg", { o3: ["asd"], o100: ["qewr"] }),
+            C.comm2("comm2", ["arg"], { o3: ["asd"], o100: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o4 is missing")))) }
         )
     })
 
     test("command name valid, arg valid, option o3 and o4 are missing", () => {
         pipe(
-            C.comm2("comm2", "arg", {}),
+            C.comm2("comm2", ["arg"], {}),
             er => { expect(er).toEqual(O.some(E.left(Error("Option o3 is missing")))) }
         )
     })
@@ -167,7 +167,7 @@ describe("comm2", () => {
 
     test("command name invalid, arg valid, all options valid", () => {
         pipe(
-            C.comm2("invalidcommadn", "arg", { o3: ["value3"], o4: ["value4"] }),
+            C.comm2("invalidcommadn", ["arg"], { o3: ["value3"], o4: ["value4"] }),
             x => { expect(x).toEqual(O.none) }
         )
     })
@@ -176,7 +176,7 @@ describe("comm2", () => {
 describe("comm3", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
-            C.comm3("comm3", "arg", { req: ["asd"], opt: ["qewr"] }),
+            C.comm3("comm3", ["arg"], { req: ["asd"], opt: ["qewr"] }),
             a => {
                 expect(a).toEqual(
                     O.some(
@@ -192,14 +192,14 @@ describe("comm3", () => {
 
     test("command name valid, arg valid, option req is missing", () => {
         pipe(
-            C.comm3("comm3", "arg", { xxx: ["asd"], opt: ["qewr"] }),
+            C.comm3("comm3", ["arg"], { xxx: ["asd"], opt: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option req is missing")))) }
         )
     })
 
     test("command name valid, arg valid, option opt is missing", () => {
         pipe(
-            C.comm3("comm3", "arg", { req: ["asd"], xxx: ["qewr"] }),
+            C.comm3("comm3", ["arg"], { req: ["asd"], xxx: ["qewr"] }),
             a => {
                 expect(a).toEqual(
                     O.some(
@@ -215,7 +215,7 @@ describe("comm3", () => {
 
     test("command name valid, arg valid, option req and opt are missing", () => {
         pipe(
-            C.comm3("comm3", "arg", {}),
+            C.comm3("comm3", ["arg"], {}),
             er => { expect(er).toEqual(O.some(E.left(Error("Option req is missing")))) }
         )
     })
@@ -223,7 +223,7 @@ describe("comm3", () => {
 
     test("command name invalid, arg valid, all options valid", () => {
         pipe(
-            C.comm3("invalidcommadn", "arg", { req: ["value3"], opt: ["value4"] }),
+            C.comm3("invalidcommadn", ["arg"], { req: ["value3"], opt: ["value4"] }),
             x => { expect(x).toEqual(O.none) }
         )
     })

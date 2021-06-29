@@ -4,30 +4,30 @@ import {
     comm1,
     comm2
 } from "./command"
-import { parseArgv, getOptionDict, getAllOptionList, explodeTailTip, getOpt } from "./fpclparser"
+import { parseArgv, getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgvMultipleArgs } from "./fpclparser"
 
 
 describe("parseArgv", () => {
     test("Command 1 from xcomm1 constructor", () => {
-        expect(parseArgv(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
+        expect(parseArgvMultipleArgs(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"],
             [comm1])).toEqual(comm1(
                 "comm1",
-                "arg1",
+                ["arg1"],
                 getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
             ))
     })
 
     test("Command2 from xcomm2 constructor", () => {
-        expect(parseArgv(["comm2", "arg1", "--o3", "value1", "--o4", "value2"],
+        expect(parseArgvMultipleArgs(["comm2", "arg1", "--o3", "value1", "--o4", "value2"],
             [comm1, comm2])).toEqual(comm2(
                 "comm2",
-                "arg1",
+                ["arg1"],
                 getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
             ))
     })
 
     test("Bad command", () => {
-        expect(parseArgv(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"],
+        expect(parseArgvMultipleArgs(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"],
             [comm1, comm2])).toEqual(O.none)
     })
 

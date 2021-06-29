@@ -33,7 +33,7 @@ export interface CommandWithMultipleArgs {
     opt2: string;
 }
 
-export type CommandX = O.Option<E.Either<Error, CommandWithMultipleArgs>>;
+export type CommandX = O.Option<E.Either<Error, CommandWithMultipleArgs | Command1 | Command2 | Command3>>;
 export type Command = O.Option<E.Either<Error, Command1 | Command2 | Command3>>
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
@@ -66,24 +66,32 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
 }
 
 
-export function comm3(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
+export function comm3(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command3>> {
     return name != "comm3" ?
         O.none
         : O.some(pipe(
-            opts,
-            ensureOpts(["req"]),
+            [args, opts] as [string[], CommandOptionDict],
+            ([args, opts]) => [
+                ensureSize(1)(args),
+                ensureOpts(["req"])(opts)
+            ] as [
+                    E.Either<Error, string[]>,
+                    E.Either<Error, CommandOptionDict>
+                ],
+            (x) => sequenceT(e)(...x),
             E.map(
-                a => ({
+                ([args, opts]: [any, any]) => ({
                     _tag: "comm3",
-                    arg: arg,
-                    req: a["req"][0],
+                    arg: args[0],
+                    req: opts["req"][0],
                     opt: pipe(
-                        O.fromNullable(a["opt"]),
+                        O.fromNullable(opts["opt"]),
                         O.map(opt => opt[0])
                     )
+
                 })
             )
-        ))
+        ));
 }
 
 export const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
@@ -112,38 +120,52 @@ export const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
 };
 
 
-export function comm1(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
+export function comm1(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command1>> {
     return name != "comm1" ?
         O.none
         : O.some(pipe(
-            opts,
-            ensureOpts(["o1", "o2"]),
+            [args, opts] as [string[], CommandOptionDict],
+            ([args, opts]) => [
+                ensureSize(1)(args),
+                ensureOpts(["o1", "o2"])(opts)
+            ] as [
+                    E.Either<Error, string[]>,
+                    E.Either<Error, CommandOptionDict>
+                ],
+            (x) => sequenceT(e)(...x),
             E.map(
-                a => ({
+                ([args, opts]: [any, any]) => ({
                     _tag: "comm1",
-                    arg: arg,
-                    o1: a["o1"][0],
-                    o2: a["o2"][0]
+                    arg: args[0],
+                    o1: opts["o1"][0],
+                    o2: opts["o2"][0]
                 })
             )
-        ))
+        ));
 }
 
-export function comm2(name: string, arg: string, opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
+export function comm2(name: string, args: string[], opts: CommandOptionDict): O.Option<E.Either<Error, Command2>> {
     return name != "comm2" ?
         O.none
         : O.some(pipe(
-            opts,
-            ensureOpts(["o3", "o4"]),
+            [args, opts] as [string[], CommandOptionDict],
+            ([args, opts]) => [
+                ensureSize(1)(args),
+                ensureOpts(["o3", "o4"])(opts)
+            ] as [
+                    E.Either<Error, string[]>,
+                    E.Either<Error, CommandOptionDict>
+                ],
+            (x) => sequenceT(e)(...x),
             E.map(
-                a => ({
+                ([args, opts]: [any, any]) => ({
                     _tag: "comm2",
-                    arg: arg,
-                    o3: a["o3"][0],
-                    o4: a["o4"][0]
+                    arg: args[0],
+                    o3: opts["o3"][0],
+                    o4: opts["o4"][0]
                 })
             )
-        ))
+        ));
 }
 
 export const comms = [comm1, comm2, comm3]
