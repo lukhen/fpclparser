@@ -6,12 +6,12 @@ import * as R from "fp-ts/lib/Record";
 import {
     CommandOption,
     CommandOptionDict,
-    CommandX
+    Command
 } from "./command";
 
-export type CommMultipleArgs = (name: string, args: string[], opts: CommandOptionDict) => CommandX;
+export type CommandConstructor = (name: string, args: string[], opts: CommandOptionDict) => Command;
 
-export function parseArgvMultipleArgs(argv: Array<string>, comms: CommMultipleArgs[]): CommandX {
+export function parseArgv(argv: Array<string>, comms: CommandConstructor[]): Command {
     return pipe(
         comms,
         A.map(comm => comm(argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv)))),

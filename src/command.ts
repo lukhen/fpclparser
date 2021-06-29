@@ -4,7 +4,7 @@ import * as O from "fp-ts/lib/Option";
 import { sequenceT } from "fp-ts/lib/Apply";
 import * as A from "fp-ts/lib/Array"
 import { Applicative2 } from "fp-ts/lib/Applicative";
-import { CommMultipleArgs } from "./fpclparser"
+import { CommandConstructor } from "./fpclparser"
 
 export interface Command1 {
     _tag: "comm1";
@@ -33,7 +33,7 @@ export interface Command4 {
     opt2: string;
 }
 
-export type CommandX = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
+export type Command = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
@@ -93,8 +93,8 @@ export function comm3(name: string, args: string[], opts: CommandOptionDict): O.
         ));
 }
 
-export const commWithMultipleArgs: CommMultipleArgs = (name, args, opts) => {
-    return name != "commwithmultipleargs" ?
+export const comm4: CommandConstructor = (name, args, opts) => {
+    return name != "comm4" ?
         O.none
         : O.some(pipe(
             [args, opts] as [string[], CommandOptionDict],
@@ -176,7 +176,7 @@ export function fold<X>(handlers: {
     onCommand2: (c2: Command2) => X,
     onCommand3: (c3: Command3) => X,
     onCommand4: (c4: Command4) => X
-}): (c: CommandX) => X {
+}): (c: Command) => X {
     return c => pipe(
         c,
         O.fold(

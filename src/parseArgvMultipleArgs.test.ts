@@ -1,13 +1,13 @@
-import { getAllOptionList, getOptionDict, parseArgvMultipleArgs, getArgs } from "./fpclparser"
+import { getAllOptionList, getOptionDict, parseArgv, getArgs } from "./fpclparser"
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
-import { commWithMultipleArgs, Command4 } from "./command";
+import { comm4, Command4 } from "./command";
 
-describe("commWithMultipleArgs", () => {
+describe("comm4", () => {
     test("command name valid, args valid, all options valid", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1", "arg2"], { opt1: ["asd"], opt2: ["qewr"] }),
+            comm4("comm4", ["arg1", "arg2"], { opt1: ["asd"], opt2: ["qewr"] }),
             a => {
                 expect(a).toEqual(
                     O.some(
@@ -24,21 +24,21 @@ describe("commWithMultipleArgs", () => {
 
     test("command name valid, args valid, option opt1 is missing", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1", "arg2"], { opt2: ["qewr"] }),
+            comm4("comm4", ["arg1", "arg2"], { opt2: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option opt1 is missing")))) }
         )
     })
 
     test("command name valid, args valid, option opt2 is missing", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1", "arg2"], { opt1: ["qewr"] }),
+            comm4("comm4", ["arg1", "arg2"], { opt1: ["qewr"] }),
             er => { expect(er).toEqual(O.some(E.left(Error("Option opt2 is missing")))) }
         )
     })
 
     test("command name valid, args valid, option opt1 and opt2 are missing", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1", "arg2"], {}),
+            comm4("comm4", ["arg1", "arg2"], {}),
             er => { expect(er).toEqual(O.some(E.left(Error("Option opt1 is missing")))) }
         )
     })
@@ -46,14 +46,14 @@ describe("commWithMultipleArgs", () => {
 
     test("command name invalid, args valid, all options valid", () => {
         pipe(
-            commWithMultipleArgs("invalidcommand", ["arg1", "arg2"], { opt1: ["opt1"], opt2: ["qewr"] }),
+            comm4("invalidcommand", ["arg1", "arg2"], { opt1: ["opt1"], opt2: ["qewr"] }),
             x => { expect(x).toEqual(O.none) }
         )
     })
 
     test("command name invalid, no args, all options valid", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", [], { opt1: ["opt1"], opt2: ["qewr"] }),
+            comm4("comm4", [], { opt1: ["opt1"], opt2: ["qewr"] }),
             x => {
                 expect(x).toEqual(
                     O.some(E.left(Error("Invalid number of args"))))
@@ -63,7 +63,7 @@ describe("commWithMultipleArgs", () => {
 
     test("command name invalid, one arg, all options valid", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }),
+            comm4("comm4", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }),
             x => {
                 expect(x).toEqual(
                     O.some(E.left(Error("Invalid number of args"))))
@@ -73,7 +73,7 @@ describe("commWithMultipleArgs", () => {
 
     test("command name invalid, 3 args, all options valid", () => {
         pipe(
-            commWithMultipleArgs("commwithmultipleargs", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }),
+            comm4("comm4", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }),
             x => {
                 expect(x).toEqual(
                     O.some(E.left(Error("Invalid number of args"))))
@@ -87,8 +87,8 @@ describe("commWithMultipleArgs", () => {
 describe("parseArgvMultipleArgs", () => {
     test("commWithMultipleArgs", () => {
         const argv: string[] = ["commwithmultipleargs", "arg1", "arg2", "--opt1", "opt1-value", "--opt2", "opt2-value"]
-        expect(parseArgvMultipleArgs(argv, [commWithMultipleArgs])).toEqual(
-            commWithMultipleArgs("commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv)))
+        expect(parseArgv(argv, [comm4])).toEqual(
+            comm4("commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv)))
         )
     })
 })
