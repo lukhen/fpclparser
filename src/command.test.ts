@@ -16,6 +16,7 @@ describe("Command fold", () => {
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
+                onCommand4: c => "command4"
             }),
             x => { expect(x).toEqual("none") }
         )
@@ -30,6 +31,7 @@ describe("Command fold", () => {
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
+                onCommand4: c => "command4"
             }),
             x => { expect(x).toEqual("error") }
         )
@@ -45,6 +47,7 @@ describe("Command fold", () => {
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
+                onCommand4: c => "command4"
             }),
             x => { expect(x).toEqual("command1") }
         )
@@ -59,6 +62,7 @@ describe("Command fold", () => {
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
+                onCommand4: c => "command4"
             }),
             x => { expect(x).toEqual("command2") }
         )
@@ -73,6 +77,7 @@ describe("Command fold", () => {
                 onCommand1: c => "command1",
                 onCommand2: c => "command2",
                 onCommand3: c => "command3",
+                onCommand4: c => "command4"
             }),
             x => { expect(x).toEqual("command3") }
         )

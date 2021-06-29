@@ -175,8 +175,9 @@ export function fold<X>(handlers: {
     onError: (e: Error) => X,
     onCommand1: (c1: Command1) => X,
     onCommand2: (c2: Command2) => X,
-    onCommand3: (c3: Command3) => X
-}): (c: Command) => X {
+    onCommand3: (c3: Command3) => X,
+    onCommand4: (c4: CommandWithMultipleArgs) => X
+}): (c: CommandX) => X {
     return c => pipe(
         c,
         O.fold(
@@ -189,7 +190,7 @@ export function fold<X>(handlers: {
                         ? handlers.onCommand2(c) :
                         c._tag == "comm3"
                             ? handlers.onCommand3(c) :
-                            handlers.onCommand3(c)
+                            handlers.onCommand4(c)
             )
         )
     )
