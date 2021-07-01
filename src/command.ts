@@ -12,6 +12,13 @@ export interface Command1 {
     o2: string;
 }
 
+interface Command1Constr {
+    _tag: "comm1",
+    arg: (args: string[]) => E.Either<Error, string>,
+    o1: (opts: CommandOptionDict) => E.Either<Error, string>,
+    o2: (opts: CommandOptionDict) => E.Either<Error, string>
+}
+
 export interface Command2 {
     _tag: "comm2";
     arg: string;
@@ -79,7 +86,7 @@ export const comm3: CommandConstructor = (name, args, opts) => {
                 ],
             (x) => sequenceT(e)(...x),
             E.map(
-                ([args, opts]: [any, any]) => ({
+                ([args, opts]) => ({
                     _tag: "comm3",
                     arg: args[0],
                     req: opts["req"][0],
@@ -107,7 +114,7 @@ export const comm4: CommandConstructor = (name, args, opts) => {
                 ],
             (x) => sequenceT(e)(...x),
             E.map(
-                ([args, opts]: [any, any]) => ({
+                ([args, opts]) => ({
                     _tag: "comm4",
                     arg1: args[0],
                     arg2: args[1],
@@ -133,7 +140,7 @@ export const comm1: CommandConstructor = (name, args, opts) => {
                 ],
             (x) => sequenceT(e)(...x),
             E.map(
-                ([args, opts]: [any, any]) => ({
+                ([args, opts]) => ({
                     _tag: "comm1",
                     arg: args[0],
                     o1: opts["o1"][0],
@@ -157,7 +164,7 @@ export const comm2: CommandConstructor = (name, args, opts) => {
                 ],
             (x) => sequenceT(e)(...x),
             E.map(
-                ([args, opts]: [any, any]) => ({
+                ([args, opts]) => ({
                     _tag: "comm2",
                     arg: args[0],
                     o3: opts["o3"][0],
