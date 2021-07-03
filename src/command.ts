@@ -155,21 +155,59 @@ export function fold<X>(handlers: {
     onCommand3: (c3: Command3) => X,
     onCommand4: (c4: Command4) => X
 }): (c: Command) => X {
+    return fold4({ isC1: isCommand1, isC2: isCommand2, isC3: isCommand3, isC4: isCommand4 },
+        {
+            onNone: handlers.onNone, onError: handlers.onError,
+            onC1: handlers.onCommand1, onC2: handlers.onCommand2, onC3: handlers.onCommand3,
+            onC4: handlers.onCommand4
+        })
+
+}
+
+
+export function fold4<X, C1, C2, C3, C4>(
+    preds: {
+        isC1: (c: C1 | C2 | C3 | C4) => c is C1,
+        isC2: (c: C1 | C2 | C3 | C4) => c is C2,
+        isC3: (c: C1 | C2 | C3 | C4) => c is C3,
+        isC4: (c: C1 | C2 | C3 | C4) => c is C4
+    },
+    handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c1: C1) => X,
+        onC2: (c2: C2) => X,
+        onC3: (c3: C3) => X,
+        onC4: (c4: C4) => X
+    }): (c: O.Option<E.Either<Error, C1 | C2 | C3 | C4>>) => X {
     return c => pipe(
         c,
         O.fold(
             handlers.onNone,
             E.fold(
                 handlers.onError,
-                c => c._tag == "comm1"
-                    ? handlers.onCommand1(c)
-                    : c._tag == "comm2"
-                        ? handlers.onCommand2(c) :
-                        c._tag == "comm3"
-                            ? handlers.onCommand3(c) :
-                            handlers.onCommand4(c)
+                c => preds.isC1(c)
+                    ? handlers.onC1(c)
+                    : preds.isC2(c)
+                        ? handlers.onC2(c) :
+                        preds.isC3(c)
+                            ? handlers.onC3(c) :
+                            handlers.onC4(c)
             )
         )
     )
 
+}
+
+export function isCommand1(c: Command1 | Command2 | Command3 | Command4): c is Command1 {
+    return c._tag == "comm1"
+}
+export function isCommand2(c: Command1 | Command2 | Command3 | Command4): c is Command2 {
+    return c._tag == "comm2"
+}
+export function isCommand3(c: Command1 | Command2 | Command3 | Command4): c is Command3 {
+    return c._tag == "comm3"
+}
+export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is Command4 {
+    return c._tag == "comm4"
 }
