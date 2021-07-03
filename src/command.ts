@@ -12,13 +12,6 @@ export interface Command1 {
     o2: string;
 }
 
-interface Command1Constr {
-    _tag: "comm1",
-    arg: (args: string[]) => E.Either<Error, string>,
-    o1: (opts: CommandOptionDict) => E.Either<Error, string>,
-    o2: (opts: CommandOptionDict) => E.Either<Error, string>
-}
-
 export interface Command2 {
     _tag: "comm2";
     arg: string;
@@ -40,6 +33,44 @@ export interface Command4 {
 }
 
 export type Command = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
+export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
+
+function getConstructor<A>(
+    tag: string,
+    argCount: number,
+    reqOpts: string[],
+    f: (a: [string[], CommandOptionDict]) => A
+): (name: string, args: string[], opts: CommandOptionDict) => CommandAbs<A> {
+    return (name, args, opts) =>
+        name != tag ?
+            O.none
+            : O.some(pipe(
+                [args, opts] as [string[], CommandOptionDict],
+                ([args, opts]) => [
+                    ensureSize(argCount)(args),
+                    ensureOpts(reqOpts)(opts)
+                ] as [
+                        E.Either<Error, string[]>,
+                        E.Either<Error, CommandOptionDict>
+                    ],
+                (x) => sequenceT(e)(...x),
+                E.map(f)
+            ));
+
+}
+
+export const comm1: CommandConstructor = getConstructor<Command1>(
+    "comm1",
+    1,
+    ["o1", "o2"],
+    ([args, opts]) => ({
+        _tag: "comm1",
+        arg: args[0],
+        o1: opts["o1"][0],
+        o2: opts["o2"][0]
+    })
+)
+
 export type CommandConstructor = (name: string, args: string[], opts: CommandOptionDict) => Command;
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
@@ -72,107 +103,47 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
 }
 
 
-export const comm3: CommandConstructor = (name, args, opts) => {
-    return name != "comm3" ?
-        O.none
-        : O.some(pipe(
-            [args, opts] as [string[], CommandOptionDict],
-            ([args, opts]) => [
-                ensureSize(1)(args),
-                ensureOpts(["req"])(opts)
-            ] as [
-                    E.Either<Error, string[]>,
-                    E.Either<Error, CommandOptionDict>
-                ],
-            (x) => sequenceT(e)(...x),
-            E.map(
-                ([args, opts]) => ({
-                    _tag: "comm3",
-                    arg: args[0],
-                    req: opts["req"][0],
-                    opt: pipe(
-                        O.fromNullable(opts["opt"]),
-                        O.map(opt => opt[0])
-                    )
+export const comm3: CommandConstructor = getConstructor<Command3>(
+    "comm3",
+    1,
+    ["req"],
+    ([args, opts]) => ({
+        _tag: "comm3",
+        arg: args[0],
+        req: opts["req"][0],
+        opt: pipe(
+            O.fromNullable(opts["opt"]),
+            O.map(opt => opt[0])
+        )
 
-                })
-            )
-        ));
-}
+    })
+)
 
-export const comm4: CommandConstructor = (name, args, opts) => {
-    return name != "comm4" ?
-        O.none
-        : O.some(pipe(
-            [args, opts] as [string[], CommandOptionDict],
-            ([args, opts]) => [
-                ensureSize(2)(args),
-                ensureOpts(["opt1", "opt2"])(opts)
-            ] as [
-                    E.Either<Error, string[]>,
-                    E.Either<Error, CommandOptionDict>
-                ],
-            (x) => sequenceT(e)(...x),
-            E.map(
-                ([args, opts]) => ({
-                    _tag: "comm4",
-                    arg1: args[0],
-                    arg2: args[1],
-                    opt1: opts["opt1"][0],
-                    opt2: opts["opt2"][0]
-                })
-            )
-        ));
-};
+export const comm4: CommandConstructor = getConstructor<Command4>(
+    "comm4",
+    2,
+    ["opt1", "opt2"],
+    ([args, opts]) => ({
+        _tag: "comm4",
+        arg1: args[0],
+        arg2: args[1],
+        opt1: opts["opt1"][0],
+        opt2: opts["opt2"][0]
+    })
+)
 
+export const comm2: CommandConstructor = getConstructor<Command2>(
+    "comm2",
+    1,
+    ["o3", "o4"],
+    ([args, opts]) => ({
+        _tag: "comm2",
+        arg: args[0],
+        o3: opts["o3"][0],
+        o4: opts["o4"][0]
+    })
+)
 
-export const comm1: CommandConstructor = (name, args, opts) => {
-    return name != "comm1" ?
-        O.none
-        : O.some(pipe(
-            [args, opts] as [string[], CommandOptionDict],
-            ([args, opts]) => [
-                ensureSize(1)(args),
-                ensureOpts(["o1", "o2"])(opts)
-            ] as [
-                    E.Either<Error, string[]>,
-                    E.Either<Error, CommandOptionDict>
-                ],
-            (x) => sequenceT(e)(...x),
-            E.map(
-                ([args, opts]) => ({
-                    _tag: "comm1",
-                    arg: args[0],
-                    o1: opts["o1"][0],
-                    o2: opts["o2"][0]
-                })
-            )
-        ));
-}
-
-export const comm2: CommandConstructor = (name, args, opts) => {
-    return name != "comm2" ?
-        O.none
-        : O.some(pipe(
-            [args, opts] as [string[], CommandOptionDict],
-            ([args, opts]) => [
-                ensureSize(1)(args),
-                ensureOpts(["o3", "o4"])(opts)
-            ] as [
-                    E.Either<Error, string[]>,
-                    E.Either<Error, CommandOptionDict>
-                ],
-            (x) => sequenceT(e)(...x),
-            E.map(
-                ([args, opts]) => ({
-                    _tag: "comm2",
-                    arg: args[0],
-                    o3: opts["o3"][0],
-                    o4: opts["o4"][0]
-                })
-            )
-        ));
-}
 
 export const comms = [comm1, comm2, comm3]
 
