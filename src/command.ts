@@ -59,7 +59,7 @@ function getConstructor<A>(
 
 }
 
-export const comm1: CommandConstructor = getConstructor<Command1>(
+export const comm1: CommandConstructor<Command1> = getConstructor(
     "comm1",
     1,
     ["o1", "o2"],
@@ -71,7 +71,7 @@ export const comm1: CommandConstructor = getConstructor<Command1>(
     })
 )
 
-export type CommandConstructor = (name: string, args: string[], opts: CommandOptionDict) => Command;
+export type CommandConstructor<A> = (name: string, args: string[], opts: CommandOptionDict) => CommandAbs<A>;
 export type CommandOption = { name: string, values: string[] }
 export type CommandOptionDict = Record<string, string[]>
 
@@ -103,7 +103,7 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
 }
 
 
-export const comm3: CommandConstructor = getConstructor<Command3>(
+export const comm3: CommandConstructor<Command3> = getConstructor(
     "comm3",
     1,
     ["req"],
@@ -119,7 +119,7 @@ export const comm3: CommandConstructor = getConstructor<Command3>(
     })
 )
 
-export const comm4: CommandConstructor = getConstructor<Command4>(
+export const comm4: CommandConstructor<Command4> = getConstructor(
     "comm4",
     2,
     ["opt1", "opt2"],
@@ -132,7 +132,7 @@ export const comm4: CommandConstructor = getConstructor<Command4>(
     })
 )
 
-export const comm2: CommandConstructor = getConstructor<Command2>(
+export const comm2: CommandConstructor<Command2> = getConstructor(
     "comm2",
     1,
     ["o3", "o4"],
