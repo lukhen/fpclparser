@@ -147,7 +147,7 @@ export const comm2: CommandConstructor<Command2> = getConstructor(
 
 export const comms = [comm1, comm2, comm3]
 
-export function fold<X>(handlers: {
+export function foldSpecific<X>(handlers: {
     onNone: () => X,
     onError: (e: Error) => X,
     onCommand1: (c1: Command1) => X,

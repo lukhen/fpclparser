@@ -10,7 +10,7 @@ describe("Command fold", () => {
     test("should produce none string", () => {
         pipe(
             O.none,
-            C.fold<string>({
+            C.foldSpecific<string>({
                 onNone: () => "none",
                 onError: (e) => "error",
                 onCommand1: c => "command1",
@@ -25,7 +25,7 @@ describe("Command fold", () => {
     test("should produce error string", () => {
         pipe(
             O.some(E.left(Error(""))),
-            C.fold<string>({
+            C.foldSpecific<string>({
                 onNone: () => "none",
                 onError: (e) => "error",
                 onCommand1: c => "command1",
@@ -41,7 +41,7 @@ describe("Command fold", () => {
     test("should produce command1 string for Command1", () => {
         pipe(
             O.some(E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as C.Command1)),
-            C.fold<string>({
+            C.foldSpecific<string>({
                 onNone: () => "none",
                 onError: (e) => "error",
                 onCommand1: c => "command1",
@@ -56,7 +56,7 @@ describe("Command fold", () => {
     test("should produce command2 string for Command2", () => {
         pipe(
             O.some(E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as C.Command2)),
-            C.fold<string>({
+            C.foldSpecific<string>({
                 onNone: () => "none",
                 onError: (e) => "error",
                 onCommand1: c => "command1",
@@ -71,7 +71,7 @@ describe("Command fold", () => {
     test("should produce command3 string for Command3", () => {
         pipe(
             O.some(E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as C.Command3)),
-            C.fold<string>({
+            C.foldSpecific<string>({
                 onNone: () => "none",
                 onError: (e) => "error",
                 onCommand1: c => "command1",
