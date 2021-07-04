@@ -3,7 +3,7 @@ import * as O from "fp-ts/lib/Option"
 import {
     comm1,
     comm2
-} from "./command"
+} from "./command.test"
 import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv } from "./fpclparser"
 
 
