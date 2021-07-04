@@ -159,7 +159,7 @@ export function fold4<X, C1, C2, C3, C4>(
         onC2: (c2: C2) => X,
         onC3: (c3: C3) => X,
         onC4: (c4: C4) => X
-    }): (c: O.Option<E.Either<Error, C1 | C2 | C3 | C4>>) => X {
+    }): (c: CommandAbs<C1 | C2 | C3 | C4>) => X {
     return c => pipe(
         c,
         O.fold(
