@@ -1,4 +1,4 @@
-import * as C from "./command"
+import * as C from "./fpclparser"
 import * as O from "fp-ts/lib/Option"
 import * as E from "fp-ts/lib/Either"
 import * as IO from "fp-ts/lib/IO"
