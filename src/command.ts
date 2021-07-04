@@ -13,7 +13,7 @@ export function getConstructor<A>(
     argCount: number,
     reqOpts: string[],
     f: (a: [string[], CommandOptionDict]) => A
-): (name: string, args: string[], opts: CommandOptionDict) => CommandAbs<A> {
+): CommandConstructor<A> {
     return (name, args, opts) =>
         name != tag ?
             O.none
