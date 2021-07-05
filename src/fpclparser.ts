@@ -25,7 +25,7 @@ export function getAllOptionList(argv: string[]): CommandOption[] {
             [],
             (soFar: CommandOption[], nextEl) => pipe(
                 nextEl,
-                E.fromPredicate(el => el.startsWith("--"), el => el),
+                E.fromPredicate(isOption, el => el),
                 E.fold(
                     el => pipe(
                         soFar,
