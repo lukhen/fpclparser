@@ -178,3 +178,22 @@ export function fold4<X, C1, C2, C3, C4>(
     )
 
 }
+
+export function fold1<X, C1>(
+    handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c1: C1) => X,
+    }): (c: CommandAbs<C1>) => X {
+    return c => pipe(
+        c,
+        O.fold(
+            handlers.onNone,
+            E.fold(
+                handlers.onError,
+                c => handlers.onC1(c)
+            )
+        )
+    )
+
+}
