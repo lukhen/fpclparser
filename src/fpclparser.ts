@@ -89,11 +89,12 @@ function isOption(s: string) {
 
 export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
 
+
 export function getConstructor<A>(
     tag: string,
     argCount: number,
     reqOpts: string[],
-    f: (a: [string[], CommandOptionDict]) => A
+    f: (a: [string[], CommandOptionDict]) => E.Either<Error, A>
 ): CommandConstructor<A> {
     return (name, args, opts) =>
         name != tag ?
@@ -108,7 +109,7 @@ export function getConstructor<A>(
                         E.Either<Error, CommandOptionDict>
                     ],
                 (x) => sequenceT(e)(...x),
-                E.map(f)
+                E.chain(f)
             ));
 
 }
