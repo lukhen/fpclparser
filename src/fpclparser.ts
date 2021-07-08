@@ -179,6 +179,65 @@ export function fold4<X, C1, C2, C3, C4>(
 
 }
 
+
+export function fold3<X, C1, C2, C3>(
+    preds: {
+        isC1: (c: C1 | C2 | C3) => c is C1,
+        isC2: (c: C1 | C2 | C3) => c is C2,
+        isC3: (c: C1 | C2 | C3) => c is C3,
+    },
+    handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c1: C1) => X,
+        onC2: (c2: C2) => X,
+        onC3: (c3: C3) => X,
+    }): (c: CommandAbs<C1 | C2 | C3>) => X {
+    return c => pipe(
+        c,
+        O.fold(
+            handlers.onNone,
+            E.fold(
+                handlers.onError,
+                c => preds.isC1(c)
+                    ? handlers.onC1(c)
+                    : preds.isC2(c)
+                        ? handlers.onC2(c) :
+                        handlers.onC3(c)
+            )
+        )
+    )
+
+}
+
+
+export function fold2<X, C1, C2>(
+    preds: {
+        isC1: (c: C1 | C2) => c is C1,
+        isC2: (c: C1 | C2) => c is C2,
+    },
+    handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c1: C1) => X,
+        onC2: (c2: C2) => X,
+    }): (c: CommandAbs<C1 | C2>) => X {
+    return c => pipe(
+        c,
+        O.fold(
+            handlers.onNone,
+            E.fold(
+                handlers.onError,
+                c => preds.isC1(c)
+                    ? handlers.onC1(c)
+                    : handlers.onC2(c)
+            )
+        )
+    )
+
+}
+
+
 export function fold1<X, C1>(
     handlers: {
         onNone: () => X,
