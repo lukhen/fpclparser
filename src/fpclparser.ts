@@ -7,9 +7,8 @@ import { sequenceT } from "fp-ts/lib/Apply";
 import { Applicative2 } from "fp-ts/lib/Applicative";
 
 
-
-export function parseArgv<A>(argv: Array<string>, comms: CommandConstructor<any>[]): CommandAbs<A> {
-    return pipe(
+export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => CommandAbs<A> {
+    return argv => pipe(
         comms,
         A.map(comm => comm(argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv)))),
         x => A.filter(O.isSome)(x),
