@@ -114,7 +114,36 @@ export function getConstructor<A>(
 }
 
 export type CommandConstructor<A> = (name: string, args: string[], opts: CommandOptionDict) => CommandAbs<A>;
+
+/**
+A single command option in argv, name is option's name, and values is option's value.
+ - if values length is > 1: option has multiple values
+ - if values length is = 1: option has a single value
+ - if values length is = 0: option is a flag
+
+Examples:
+const o1: CommandOption = {name: "o1", values: ['val1', 'val2']} // multiple values
+const o2: CommandOption = {name: "o2", values: ['val3']}         // single value 
+const o3: CommandOption = {name: "o3", values: []}               // flag
+**/
 export type CommandOption = { name: string, values: string[] }
+
+
+/**
+Hash map of all options in argv, where the key is an option's name, and the value is an option's value:
+ - if array's length is > 1: option has multiple values
+ - if array's length is = 1: option has a single value
+ - if array's length is = 0: option is a flag
+
+Example: 
+For argv = ["--o1", "val1", "val2", "--o2", "val3", "--o3"]
+CommandOptionDict should look like this:
+const optDict: CommandOptionDict = {
+    o1: ['val1', 'val2'], //multiple
+    o2: ['val3'],         // single
+    o3: []                // flag
+}
+**/
 export type CommandOptionDict = Record<string, string[]>
 
 const e: Applicative2<E.URI> = {
