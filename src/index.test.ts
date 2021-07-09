@@ -9,20 +9,21 @@ import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv } fr
 
 describe("parseArgv", () => {
     test("Command 1 from xcomm1 constructor", () => {
-        expect(parseArgv([comm1])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1(
-            "comm1",
-            ["arg1"],
-            getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
+        expect(parseArgv([comm1])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1({
+            name: "comm1",
+            args: ["arg1"],
+            opts: getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
+        }
         ))
     })
 
     test("Command2 from xcomm2 constructor", () => {
         expect(parseArgv([comm1, comm2])(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
-            .toEqual(comm2(
-                "comm2",
-                ["arg1"],
-                getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
-            ))
+            .toEqual(comm2({
+                name: "comm2",
+                args: ["arg1"],
+                opts: getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+            }))
     })
 
     test("Bad command", () => {

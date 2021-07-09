@@ -10,7 +10,7 @@ import { Applicative2 } from "fp-ts/lib/Applicative";
 export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => CommandAbs<A> {
     return argv => pipe(
         comms,
-        A.map(comm => comm(argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv)))),
+        A.map(comm => comm({ name: argv[0], args: getArgs(argv), opts: getOptionDict(getAllOptionList(argv)) })),
         x => A.filter(O.isSome)(x),
         x => A.isEmpty(x) ? O.none : x[0]
     );
@@ -96,7 +96,7 @@ export interface CommandMeta<A> {
 export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
 
 export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstructor<A> {
-    return (name, args, opts) =>
+    return ({ name, args, opts }) =>
         name != commandMeta.tagOfA ?
             O.none
             : O.some(pipe(
@@ -114,7 +114,13 @@ export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstruct
 
 }
 
-export type CommandConstructor<A> = (name: string, args: string[], opts: CommandOptionDict) => CommandAbs<A>;
+export interface CommandData {
+    name: string,
+    args: string[],
+    opts: CommandOptionDict
+}
+
+export type CommandConstructor<A> = (commandData: CommandData) => CommandAbs<A>;
 
 /**
 A single command option in argv, name is option's name, and values is option's value.
