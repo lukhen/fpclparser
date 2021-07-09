@@ -86,29 +86,30 @@ function isOption(s: string) {
     return s.startsWith("--");
 }
 
-export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
-
-
-export function getConstructor<A>(
-    tag: string,
+export interface CommandMeta<A> {
+    tagOfA: string,
     argCount: number,
     reqOpts: string[],
     f: (a: [string[], CommandOptionDict]) => E.Either<Error, A>
-): CommandConstructor<A> {
+}
+
+export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
+
+export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstructor<A> {
     return (name, args, opts) =>
-        name != tag ?
+        name != commandMeta.tagOfA ?
             O.none
             : O.some(pipe(
                 [args, opts] as [string[], CommandOptionDict],
                 ([args, opts]) => [
-                    ensureSize(argCount)(args),
-                    ensureOpts(reqOpts)(opts)
+                    ensureSize(commandMeta.argCount)(args),
+                    ensureOpts(commandMeta.reqOpts)(opts)
                 ] as [
                         E.Either<Error, string[]>,
                         E.Either<Error, CommandOptionDict>
                     ],
                 (x) => sequenceT(e)(...x),
-                E.chain(f)
+                E.chain(commandMeta.f)
             ));
 
 }

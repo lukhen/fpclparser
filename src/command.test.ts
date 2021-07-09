@@ -35,23 +35,24 @@ export interface Command4 {
 
 export type Command = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
 
-export const comm1: C.CommandConstructor<Command1> = C.getConstructor(
-    "comm1",
-    1,
-    ["o1", "o2"],
-    ([args, opts]) => (E.right({
+export const comm1: C.CommandConstructor<Command1> = C.getConstructor({
+    tagOfA: "comm1",
+    argCount: 1,
+    reqOpts: ["o1", "o2"],
+    f: ([args, opts]) => (E.right({
         _tag: "comm1",
         arg: args[0],
         o1: opts["o1"][0],
         o2: opts["o2"][0]
     }))
+}
 )
 
-export const comm3: C.CommandConstructor<Command3> = C.getConstructor(
-    "comm3",
-    1,
-    ["req"],
-    ([args, opts]) => (E.right({
+export const comm3: C.CommandConstructor<Command3> = C.getConstructor({
+    tagOfA: "comm3",
+    argCount: 1,
+    reqOpts: ["req"],
+    f: ([args, opts]) => (E.right({
         _tag: "comm3",
         arg: args[0],
         req: opts["req"][0],
@@ -61,31 +62,34 @@ export const comm3: C.CommandConstructor<Command3> = C.getConstructor(
         )
 
     }))
+}
 )
 
-export const comm4: C.CommandConstructor<Command4> = C.getConstructor(
-    "comm4",
-    2,
-    ["opt1", "opt2"],
-    ([args, opts]) => (E.right({
+export const comm4: C.CommandConstructor<Command4> = C.getConstructor({
+    tagOfA: "comm4",
+    argCount: 2,
+    reqOpts: ["opt1", "opt2"],
+    f: ([args, opts]) => (E.right({
         _tag: "comm4",
         arg1: args[0],
         arg2: args[1],
         opt1: opts["opt1"][0],
         opt2: opts["opt2"][0]
     }))
+}
 )
 
-export const comm2: C.CommandConstructor<Command2> = C.getConstructor(
-    "comm2",
-    1,
-    ["o3", "o4"],
-    ([args, opts]) => (E.right({
+export const comm2: C.CommandConstructor<Command2> = C.getConstructor({
+    tagOfA: "comm2",
+    argCount: 1,
+    reqOpts: ["o3", "o4"],
+    f: ([args, opts]) => (E.right({
         _tag: "comm2",
         arg: args[0],
         o3: opts["o3"][0],
         o4: opts["o4"][0]
     }))
+}
 )
 
 
@@ -355,11 +359,11 @@ describe("comm3", () => {
 
 describe("comm1 with error", () => {
     test("error if o1 is an empty string", pipe(
-        C.getConstructor<Command1>(
-            "comm1",
-            1,
-            ["o1", "o2"],
-            ([args, opts]) =>
+        C.getConstructor<Command1>({
+            tagOfA: "comm1",
+            argCount: 1,
+            reqOpts: ["o1", "o2"],
+            f: ([args, opts]) =>
                 opts["o1"][0] == "" ?
                     E.left(Error("o1 is not allowed to be an empty string")) :
                     E.right({
@@ -368,6 +372,7 @@ describe("comm1 with error", () => {
                         o1: opts["o1"][0],
                         o2: opts["o2"][0]
                     })
+        }
         ),
         c => () => {
             expect(c("comm1", ["asdf"], { o1: [""], o2: ["asdf"] })).toEqual(
@@ -377,11 +382,11 @@ describe("comm1 with error", () => {
     ))
 
     test("produce Command1 if o1 is not an empty string", pipe(
-        C.getConstructor<Command1>(
-            "comm1",
-            1,
-            ["o1", "o2"],
-            ([args, opts]) =>
+        C.getConstructor<Command1>({
+            tagOfA: "comm1",
+            argCount: 1,
+            reqOpts: ["o1", "o2"],
+            f: ([args, opts]) =>
                 opts["o1"][0] == "" ?
                     E.left(Error("o1 is not allowed to be an empty string")) :
                     E.right({
@@ -390,6 +395,7 @@ describe("comm1 with error", () => {
                         o1: opts["o1"][0],
                         o2: opts["o2"][0]
                     })
+        }
         ),
         c => () => {
             expect(c("comm1", ["asdf"], { o1: ["notEmpty"], o2: ["asdf"] })).toEqual(
