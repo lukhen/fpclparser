@@ -44,9 +44,15 @@ export function getAllOptionList(argv: string[]): CommandOption[] {
         )
     );
 }
+/**
+Separate the last element of the list, unless it's empty.
+**/
 export function explodeTailTip<A>(arr: Array<A>): { body: Array<A>; tailTip: O.Option<A>; } {
     return { body: arr.slice(0, arr.length - 1), tailTip: O.fromNullable(arr[arr.length - 1]) };
 }
+/**
+   Produce O.some if argv contains optName option, otherwise produce Option.none
+**/
 export function getOpt(argv: string[]): (optName: string) => O.Option<Array<string>> {
     return optName => O.fromNullable(getOptionDict(getAllOptionList(argv))[optName]);
 }
@@ -95,6 +101,9 @@ export interface CommandMeta<A> {
 
 export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
 
+/**
+   Produce a function that produces a CommandAbs from CommandData
+**/
 export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstructor<A> {
     return ({ name, args, opts }) =>
         name != commandMeta.tagOfA ?
@@ -113,13 +122,18 @@ export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstruct
             ));
 
 }
-
+/**
+   Data provided by the user in argv to produce a Command.
+**/
 export interface CommandData {
     name: string,
     args: string[],
     opts: CommandOptionDict
 }
 
+/**
+   Type of a function that produces CommandAbs from CommandData.
+**/
 export type CommandConstructor<A> = (commandData: CommandData) => CommandAbs<A>;
 
 /**
@@ -160,6 +174,9 @@ const e: Applicative2<E.URI> = {
     of: E.of
 }
 
+/**
+   Produce Either.right if d contains optNames, otherwise produce Either.left
+**/
 export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
     return d => pipe(
         optNames,
@@ -170,6 +187,9 @@ export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Eith
     );
 }
 
+/**
+   Produce Either.right is ss length is n, otherwise produce Either.left
+**/
 function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
     return ss => pipe(
         ss,
