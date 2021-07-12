@@ -96,8 +96,10 @@ export interface CommandMeta<A> {
     tagOfA: string,
     argCount: number,
     reqOpts: string[],
-    f: (a: [string[], CommandOptionDict]) => E.Either<Error, A>
+    f: F<A>
 }
+
+export type F<A> = (d: [string[], CommandOptionDict]) => E.Either<Error, A>
 
 export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
 
