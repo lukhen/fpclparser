@@ -7,7 +7,7 @@ import { sequenceT } from "fp-ts/lib/Apply";
 import { Applicative2 } from "fp-ts/lib/Applicative";
 
 
-export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => CommandAbs<A> {
+export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => XEither<A> {
     return argv => pipe(
         comms,
         A.map(comm => comm({ name: argv[0], args: getArgs(argv), opts: getOptionDict(getAllOptionList(argv)) })),
@@ -101,7 +101,7 @@ export interface CommandMeta<A> {
 
 export type F<A> = (d: [string[], CommandOptionDict]) => E.Either<Error, A>
 
-export type CommandAbs<A> = O.Option<E.Either<Error, A>>;
+export type XEither<A> = O.Option<E.Either<Error, A>>;
 
 /**
    Produce a function that produces a CommandAbs from CommandData
@@ -136,7 +136,7 @@ export interface CommandData {
 /**
    Type of a function that produces CommandAbs from CommandData.
 **/
-export type CommandConstructor<A> = (commandData: CommandData) => CommandAbs<A>;
+export type CommandConstructor<A> = (commandData: CommandData) => XEither<A>;
 
 /**
 A single command option in argv, name is option's name, and values is option's value.
@@ -217,7 +217,7 @@ export function fold4<X, C1, C2, C3, C4>(
         onC2: (c2: C2) => X,
         onC3: (c3: C3) => X,
         onC4: (c4: C4) => X
-    }): (c: CommandAbs<C1 | C2 | C3 | C4>) => X {
+    }): (c: XEither<C1 | C2 | C3 | C4>) => X {
     return c => pipe(
         c,
         O.fold(
@@ -250,7 +250,7 @@ export function fold3<X, C1, C2, C3>(
         onC1: (c1: C1) => X,
         onC2: (c2: C2) => X,
         onC3: (c3: C3) => X,
-    }): (c: CommandAbs<C1 | C2 | C3>) => X {
+    }): (c: XEither<C1 | C2 | C3>) => X {
     return c => pipe(
         c,
         O.fold(
@@ -279,7 +279,7 @@ export function fold2<X, C1, C2>(
         onError: (e: Error) => X,
         onC1: (c1: C1) => X,
         onC2: (c2: C2) => X,
-    }): (c: CommandAbs<C1 | C2>) => X {
+    }): (c: XEither<C1 | C2>) => X {
     return c => pipe(
         c,
         O.fold(
@@ -301,7 +301,7 @@ export function fold1<X, C1>(
         onNone: () => X,
         onError: (e: Error) => X,
         onC1: (c1: C1) => X,
-    }): (c: CommandAbs<C1>) => X {
+    }): (c: XEither<C1>) => X {
     return c => pipe(
         c,
         O.fold(
