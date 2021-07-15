@@ -95,23 +95,6 @@ export const comm2: C.CommandConstructor<Command2> = C.getConstructor({
 
 export const comms = [comm1, comm2, comm3]
 
-export function foldSpecific<X>(handlers: {
-    onNone: () => X,
-    onError: (e: Error) => X,
-    onCommand1: (c1: Command1) => X,
-    onCommand2: (c2: Command2) => X,
-    onCommand3: (c3: Command3) => X,
-    onCommand4: (c4: Command4) => X
-}): (c: Command) => X {
-    return C.fold4({ isC1: isCommand1, isC2: isCommand2, isC3: isCommand3, isC4: isCommand4 },
-        {
-            onNone: handlers.onNone, onError: handlers.onError,
-            onC1: handlers.onCommand1, onC2: handlers.onCommand2, onC3: handlers.onCommand3,
-            onC4: handlers.onCommand4
-        })
-}
-
-
 export function isCommand1(c: Command1 | Command2 | Command3 | Command4): c is Command1 {
     return c._tag == "comm1"
 }
@@ -126,7 +109,6 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
 }
 
 const xeF = C.getXEitherFoldable4Instance({ isC1: isCommand1, isC2: isCommand2, isC3: isCommand3, isC4: isCommand4 })
-
 
 describe("Command fold", () => {
 

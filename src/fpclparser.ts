@@ -202,42 +202,6 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
     );
 }
 
-
-export function fold4<X, C1, C2, C3, C4>(
-    preds: {
-        isC1: (c: C1 | C2 | C3 | C4) => c is C1,
-        isC2: (c: C1 | C2 | C3 | C4) => c is C2,
-        isC3: (c: C1 | C2 | C3 | C4) => c is C3,
-        isC4: (c: C1 | C2 | C3 | C4) => c is C4
-    },
-    handlers: {
-        onNone: () => X,
-        onError: (e: Error) => X,
-        onC1: (c1: C1) => X,
-        onC2: (c2: C2) => X,
-        onC3: (c3: C3) => X,
-        onC4: (c4: C4) => X
-    }): (c: XEither<C1 | C2 | C3 | C4>) => X {
-    return c => pipe(
-        c,
-        O.fold(
-            handlers.onNone,
-            E.fold(
-                handlers.onError,
-                c => preds.isC1(c)
-                    ? handlers.onC1(c)
-                    : preds.isC2(c)
-                        ? handlers.onC2(c) :
-                        preds.isC3(c)
-                            ? handlers.onC3(c) :
-                            handlers.onC4(c)
-            )
-        )
-    )
-
-}
-
-
 export function fold3<X, C1, C2, C3>(
     preds: {
         isC1: (c: C1 | C2 | C3) => c is C1,
