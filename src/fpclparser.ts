@@ -202,87 +202,9 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
     );
 }
 
-export function fold3<X, C1, C2, C3>(
-    preds: {
-        isC1: (c: C1 | C2 | C3) => c is C1,
-        isC2: (c: C1 | C2 | C3) => c is C2,
-        isC3: (c: C1 | C2 | C3) => c is C3,
-    },
-    handlers: {
-        onNone: () => X,
-        onError: (e: Error) => X,
-        onC1: (c1: C1) => X,
-        onC2: (c2: C2) => X,
-        onC3: (c3: C3) => X,
-    }): (c: XEither<C1 | C2 | C3>) => X {
-    return c => pipe(
-        c,
-        O.fold(
-            handlers.onNone,
-            E.fold(
-                handlers.onError,
-                c => preds.isC1(c)
-                    ? handlers.onC1(c)
-                    : preds.isC2(c)
-                        ? handlers.onC2(c) :
-                        handlers.onC3(c)
-            )
-        )
-    )
-
-}
-
-
-export function fold2<X, C1, C2>(
-    preds: {
-        isC1: (c: C1 | C2) => c is C1,
-        isC2: (c: C1 | C2) => c is C2,
-    },
-    handlers: {
-        onNone: () => X,
-        onError: (e: Error) => X,
-        onC1: (c1: C1) => X,
-        onC2: (c2: C2) => X,
-    }): (c: XEither<C1 | C2>) => X {
-    return c => pipe(
-        c,
-        O.fold(
-            handlers.onNone,
-            E.fold(
-                handlers.onError,
-                c => preds.isC1(c)
-                    ? handlers.onC1(c)
-                    : handlers.onC2(c)
-            )
-        )
-    )
-
-}
-
-
-export function fold1<X, C1>(
-    handlers: {
-        onNone: () => X,
-        onError: (e: Error) => X,
-        onC1: (c1: C1) => X,
-    }): (c: XEither<C1>) => X {
-    return c => pipe(
-        c,
-        O.fold(
-            handlers.onNone,
-            E.fold(
-                handlers.onError,
-                c => handlers.onC1(c)
-            )
-        )
-    )
-
-}
-
 export function map1<X, C1>(f: ((c1: C1) => X)): (xe: XEither<C1>) => XEither<X> {
     return xe => O.map((e: E.Either<Error, C1>) => E.map((c1: C1) => f(c1))(e))(xe)
 }
-
 
 export function getXEitherFoldable4Instance<C1, C2, C3, C4>(preds: {
     isC1: (c: C1 | C2 | C3 | C4) => c is C1,
@@ -297,7 +219,6 @@ export function getXEitherFoldable4Instance<C1, C2, C3, C4>(preds: {
         onC2: (c: C2) => X,
         onC3: (c: C3) => X,
         onC4: (c: C4) => X
-
     }) => (c: XEither<C1 | C2 | C3 | C4>) => X
 } {
     return {
@@ -314,6 +235,85 @@ export function getXEitherFoldable4Instance<C1, C2, C3, C4>(preds: {
                             preds.isC3(c)
                                 ? handlers.onC3(c) :
                                 handlers.onC4(c)
+                )
+            )
+        )
+    }
+}
+
+export function getXEitherFoldable3Instance<C1, C2, C3>(preds: {
+    isC1: (c: C1 | C2 | C3) => c is C1,
+    isC2: (c: C1 | C2 | C3) => c is C2,
+    isC3: (c: C1 | C2 | C3) => c is C3
+}): {
+    fold: <X>(handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c: C1) => X,
+        onC2: (c: C2) => X,
+        onC3: (c: C3) => X,
+    }) => (c: XEither<C1 | C2 | C3>) => X
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            O.fold(
+                handlers.onNone,
+                E.fold(
+                    handlers.onError,
+                    c => preds.isC1(c)
+                        ? handlers.onC1(c)
+                        : preds.isC2(c)
+                            ? handlers.onC2(c) :
+                            handlers.onC3(c)
+                )
+            )
+        )
+    }
+}
+
+export function getXEitherFoldable2Instance<C1, C2>(preds: {
+    isC1: (c: C1 | C2) => c is C1,
+    isC2: (c: C1 | C2) => c is C2,
+}): {
+    fold: <X>(handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c: C1) => X,
+        onC2: (c: C2) => X,
+    }) => (c: XEither<C1 | C2>) => X
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            O.fold(
+                handlers.onNone,
+                E.fold(
+                    handlers.onError,
+                    c => preds.isC1(c)
+                        ? handlers.onC1(c) :
+                        handlers.onC2(c)
+                )
+            )
+        )
+    }
+}
+
+export function getXEitherFoldable1Instance<C1>(): {
+    fold: <X>(handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c: C1) => X,
+    }) => (c: XEither<C1>) => X
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            O.fold(
+                handlers.onNone,
+                E.fold(
+                    handlers.onError,
+                    c => handlers.onC1(c)
                 )
             )
         )
