@@ -314,3 +314,7 @@ export function fold1<X, C1>(
     )
 
 }
+
+export function map1<X, C1>(f: ((c1: C1) => X)): (xe: XEither<C1>) => XEither<X> {
+    return xe => O.map((e: E.Either<Error, C1>) => E.map((c1: C1) => f(c1))(e))(xe)
+}
