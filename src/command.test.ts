@@ -125,7 +125,7 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
     return c._tag == "comm4"
 }
 
-
+const xeF = C.getXEitherFoldable4Instance({ isC1: isCommand1, isC2: isCommand2, isC3: isCommand3, isC4: isCommand4 })
 
 
 describe("Command fold", () => {
@@ -133,13 +133,13 @@ describe("Command fold", () => {
     test("should produce none string", () => {
         pipe(
             O.none,
-            foldSpecific<string>({
+            xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onCommand1: c => "command1",
-                onCommand2: c => "command2",
-                onCommand3: c => "command3",
-                onCommand4: c => "command4"
+                onC1: c => "command1",
+                onC2: c => "command2",
+                onC3: c => "command3",
+                onC4: c => "command4"
             }),
             x => { expect(x).toEqual("none") }
         )
@@ -148,13 +148,13 @@ describe("Command fold", () => {
     test("should produce error string", () => {
         pipe(
             O.some(E.left(Error(""))),
-            foldSpecific<string>({
+            xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onCommand1: c => "command1",
-                onCommand2: c => "command2",
-                onCommand3: c => "command3",
-                onCommand4: c => "command4"
+                onC1: c => "command1",
+                onC2: c => "command2",
+                onC3: c => "command3",
+                onC4: c => "command4"
             }),
             x => { expect(x).toEqual("error") }
         )
@@ -164,13 +164,13 @@ describe("Command fold", () => {
     test("should produce command1 string for Command1", () => {
         pipe(
             O.some(E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as Command1)),
-            foldSpecific<string>({
+            xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onCommand1: c => "command1",
-                onCommand2: c => "command2",
-                onCommand3: c => "command3",
-                onCommand4: c => "command4"
+                onC1: c => "command1",
+                onC2: c => "command2",
+                onC3: c => "command3",
+                onC4: c => "command4"
             }),
             x => { expect(x).toEqual("command1") }
         )
@@ -179,13 +179,13 @@ describe("Command fold", () => {
     test("should produce command2 string for Command2", () => {
         pipe(
             O.some(E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as Command2)),
-            foldSpecific<string>({
+            xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onCommand1: c => "command1",
-                onCommand2: c => "command2",
-                onCommand3: c => "command3",
-                onCommand4: c => "command4"
+                onC1: c => "command1",
+                onC2: c => "command2",
+                onC3: c => "command3",
+                onC4: c => "command4"
             }),
             x => { expect(x).toEqual("command2") }
         )
@@ -194,13 +194,13 @@ describe("Command fold", () => {
     test("should produce command3 string for Command3", () => {
         pipe(
             O.some(E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as Command3)),
-            foldSpecific<string>({
+            xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onCommand1: c => "command1",
-                onCommand2: c => "command2",
-                onCommand3: c => "command3",
-                onCommand4: c => "command4"
+                onC1: c => "command1",
+                onC2: c => "command2",
+                onC3: c => "command3",
+                onC4: c => "command4"
             }),
             x => { expect(x).toEqual("command3") }
         )

@@ -318,3 +318,40 @@ export function fold1<X, C1>(
 export function map1<X, C1>(f: ((c1: C1) => X)): (xe: XEither<C1>) => XEither<X> {
     return xe => O.map((e: E.Either<Error, C1>) => E.map((c1: C1) => f(c1))(e))(xe)
 }
+
+
+export function getXEitherFoldable4Instance<C1, C2, C3, C4>(preds: {
+    isC1: (c: C1 | C2 | C3 | C4) => c is C1,
+    isC2: (c: C1 | C2 | C3 | C4) => c is C2,
+    isC3: (c: C1 | C2 | C3 | C4) => c is C3
+    isC4: (c: C1 | C2 | C3 | C4) => c is C4
+}): {
+    fold: <X>(handlers: {
+        onNone: () => X,
+        onError: (e: Error) => X,
+        onC1: (c: C1) => X,
+        onC2: (c: C2) => X,
+        onC3: (c: C3) => X,
+        onC4: (c: C4) => X
+
+    }) => (c: XEither<C1 | C2 | C3 | C4>) => X
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            O.fold(
+                handlers.onNone,
+                E.fold(
+                    handlers.onError,
+                    c => preds.isC1(c)
+                        ? handlers.onC1(c)
+                        : preds.isC2(c)
+                            ? handlers.onC2(c) :
+                            preds.isC3(c)
+                                ? handlers.onC3(c) :
+                                handlers.onC4(c)
+                )
+            )
+        )
+    }
+}
