@@ -321,24 +321,3 @@ export function getXEitherFoldable2Instance<A, B>(preds: {
             preds.isA(c) ? handlers.onA(c) : handlers.onB(c))(e))(xe)
     }
 }
-
-export function getXEitherFoldable1Instance<C1>(): {
-    fold: <X>(handlers: {
-        onNone: () => X,
-        onError: (e: Error) => X,
-        onC1: (c: C1) => X,
-    }) => (c: XEither<C1>) => X
-} {
-    return {
-        fold: handlers => c => pipe(
-            c,
-            O.fold(
-                handlers.onNone,
-                E.fold(
-                    handlers.onError,
-                    c => handlers.onC1(c)
-                )
-            )
-        )
-    }
-}
