@@ -108,7 +108,7 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
     return c._tag == "comm4"
 }
 
-const xeF = C.getXEitherFoldable4Instance({ isC1: isCommand1, isC2: isCommand2, isC3: isCommand3, isC4: isCommand4 })
+const xeF = C.getXEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
 
 describe("Command fold", () => {
 
@@ -118,10 +118,10 @@ describe("Command fold", () => {
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onC1: c => "command1",
-                onC2: c => "command2",
-                onC3: c => "command3",
-                onC4: c => "command4"
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
             }),
             x => { expect(x).toEqual("none") }
         )
@@ -133,10 +133,10 @@ describe("Command fold", () => {
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onC1: c => "command1",
-                onC2: c => "command2",
-                onC3: c => "command3",
-                onC4: c => "command4"
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
             }),
             x => { expect(x).toEqual("error") }
         )
@@ -149,10 +149,10 @@ describe("Command fold", () => {
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onC1: c => "command1",
-                onC2: c => "command2",
-                onC3: c => "command3",
-                onC4: c => "command4"
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
             }),
             x => { expect(x).toEqual("command1") }
         )
@@ -164,10 +164,10 @@ describe("Command fold", () => {
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onC1: c => "command1",
-                onC2: c => "command2",
-                onC3: c => "command3",
-                onC4: c => "command4"
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
             }),
             x => { expect(x).toEqual("command2") }
         )
@@ -179,10 +179,10 @@ describe("Command fold", () => {
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
-                onC1: c => "command1",
-                onC2: c => "command2",
-                onC3: c => "command3",
-                onC4: c => "command4"
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
             }),
             x => { expect(x).toEqual("command3") }
         )
