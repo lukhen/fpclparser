@@ -281,7 +281,13 @@ export function getXEitherFoldable3Instance<A, B, C>(preds: {
         onA: (c: A) => X,
         onB: (c: B) => X,
         onC: (c: C) => X,
-    }) => (c: XEither<A | B | C>) => X
+    }) => (c: XEither<A | B | C>) => X,
+    map: <X>(handlers: {
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+        onC: (c: C) => X,
+    }) => (xe: XEither<A | B | C>) => XEither<X>
+
 } {
     return {
         fold: handlers => c => pipe(
@@ -297,9 +303,14 @@ export function getXEitherFoldable3Instance<A, B, C>(preds: {
                             handlers.onC(c)
                 )
             )
-        )
+        ),
+        map: handlers => xe => O.map((e: E.Either<Error, A | B | C>) => E.map((c: A | B | C) =>
+            preds.isA(c) ? handlers.onA(c)
+                : preds.isB(c) ? handlers.onB(c) :
+                    handlers.onC(c))(e))(xe)
     }
 }
+
 
 export function getXEitherFoldable2Instance<A, B>(preds: {
     isA: (c: A | B) => c is A,
