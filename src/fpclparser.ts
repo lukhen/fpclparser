@@ -202,11 +202,11 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
     );
 }
 
-export function map1<X, C1>(f: ((c1: C1) => X)): (xe: XEither<C1>) => XEither<X> {
+export function map<X, C1>(f: ((c1: C1) => X)): (xe: XEither<C1>) => XEither<X> {
     return xe => O.map((e: E.Either<Error, C1>) => E.map((c1: C1) => f(c1))(e))(xe)
 }
 
-export function fold1<X, C1>(handlers: {
+export function fold<X, C1>(handlers: {
     onNone: () => X,
     onError: (e: Error) => X,
     onC1: (c: C1) => X
