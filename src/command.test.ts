@@ -110,6 +110,88 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
 
 const xeF = C.getXEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
 
+describe("XEither4 map", () => {
+    test("none", () => {
+        pipe(
+            O.none,
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.none) }
+        )
+    })
+
+    test("error", () => {
+        pipe(
+            O.some(E.left(Error("error message"))),
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.some(E.left(Error("error message")))) }
+        )
+    })
+
+    test("a", () => {
+        pipe(
+            O.some(E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as Command1)),
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.some(E.right("a"))) }
+        )
+    })
+
+    test("b", () => {
+        pipe(
+            O.some(E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as Command2)),
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.some(E.right("b"))) }
+        )
+    })
+
+    test("c", () => {
+        pipe(
+            O.some(E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as Command3)),
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.some(E.right("c"))) }
+        )
+    })
+
+    test("d", () => {
+        pipe(
+            O.some(E.right({ _tag: "comm4", arg1: "arg1", arg2: "arg2", opt1: "", opt2: "" } as Command4)),
+            xeF.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(O.some(E.right("d"))) }
+        )
+    })
+
+
+})
+
 describe("Command fold", () => {
 
     test("should produce none string", () => {
