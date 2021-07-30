@@ -33,7 +33,6 @@ export interface Command4 {
     opt2: string;
 }
 
-export type Command = O.Option<E.Either<Error, Command4 | Command1 | Command2 | Command3>>;
 
 export const comm1: C.CommandConstructor<Command1> = C.getConstructor({
     tagOfA: "comm1",
