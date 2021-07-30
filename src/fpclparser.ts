@@ -99,9 +99,9 @@ export interface CommandMeta<A> {
     f: F<A>
 }
 
-export type F<A> = (d: [string[], CommandOptionDict]) => E.Either<Error, A>
+export type F<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
 
-export type XEither<A> = O.Option<E.Either<Error, A>>;
+export type XEither<A> = O.Option<E.Either<string[], A>>;
 
 /**
    Produce a function that produces a CommandAbs from CommandData
@@ -116,8 +116,8 @@ export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstruct
                     ensureSize(commandMeta.argCount)(args),
                     ensureOpts(commandMeta.reqOpts)(opts)
                 ] as [
-                        E.Either<Error, string[]>,
-                        E.Either<Error, CommandOptionDict>
+                        E.Either<string[], string[]>,
+                        E.Either<string[], CommandOptionDict>
                     ],
                 (x) => sequenceT(e)(...x),
                 E.chain(commandMeta.f)
@@ -203,12 +203,12 @@ function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
 }
 
 export function map<X, A>(f: ((c1: A) => X)): (xe: XEither<A>) => XEither<X> {
-    return xe => O.map((e: E.Either<Error, A>) => E.map((c1: A) => f(c1))(e))(xe)
+    return xe => O.map((e: E.Either<string[], A>) => E.map((c1: A) => f(c1))(e))(xe)
 }
 
 export function fold<X, A>(handlers: {
     onNone: () => X,
-    onError: (e: Error) => X,
+    onError: (e: string[]) => X,
     onC1: (c: A) => X
 }): (c: XEither<A>) => X {
     return c => pipe(
@@ -231,7 +231,7 @@ export function getXEitherFoldable4Instance<A, B, C, D>(preds: {
 }): {
     fold: <X>(handlers: {
         onNone: () => X,
-        onError: (e: Error) => X,
+        onError: (e: string[]) => X,
         onA: (c: A) => X,
         onB: (c: B) => X,
         onC: (c: C) => X,
@@ -261,7 +261,7 @@ export function getXEitherFoldable4Instance<A, B, C, D>(preds: {
                 )
             )
         ),
-        map: handlers => xe => O.map((e: E.Either<Error, A | B | C | D>) => E.map((c: A | B | C | D) =>
+        map: handlers => xe => O.map((e: E.Either<string[], A | B | C | D>) => E.map((c: A | B | C | D) =>
             preds.isA(c) ? handlers.onA(c)
                 : preds.isB(c) ? handlers.onB(c) :
                     preds.isC(c) ? handlers.onC(c) :
@@ -277,7 +277,7 @@ export function getXEitherFoldable3Instance<A, B, C>(preds: {
 }): {
     fold: <X>(handlers: {
         onNone: () => X,
-        onError: (e: Error) => X,
+        onError: (e: string[]) => X,
         onA: (c: A) => X,
         onB: (c: B) => X,
         onC: (c: C) => X,
@@ -304,7 +304,7 @@ export function getXEitherFoldable3Instance<A, B, C>(preds: {
                 )
             )
         ),
-        map: handlers => xe => O.map((e: E.Either<Error, A | B | C>) => E.map((c: A | B | C) =>
+        map: handlers => xe => O.map((e: E.Either<string[], A | B | C>) => E.map((c: A | B | C) =>
             preds.isA(c) ? handlers.onA(c)
                 : preds.isB(c) ? handlers.onB(c) :
                     handlers.onC(c))(e))(xe)
@@ -318,7 +318,7 @@ export function getXEitherFoldable2Instance<A, B>(preds: {
 }): {
     fold: <X>(handlers: {
         onNone: () => X,
-        onError: (e: Error) => X,
+        onError: (e: string[]) => X,
         onA: (c: A) => X,
         onB: (c: B) => X,
     }) => (c: XEither<A | B>) => X,
@@ -340,7 +340,7 @@ export function getXEitherFoldable2Instance<A, B>(preds: {
                 )
             )
         ),
-        map: handlers => xe => O.map((e: E.Either<Error, A | B>) => E.map((c: A | B) =>
+        map: handlers => xe => O.map((e: E.Either<string[], A | B>) => E.map((c: A | B) =>
             preds.isA(c) ? handlers.onA(c) : handlers.onB(c))(e))(xe)
     }
 }

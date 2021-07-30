@@ -125,14 +125,14 @@ describe("XEither4 map", () => {
 
     test("error", () => {
         pipe(
-            O.some(E.left(Error("error message"))),
+            O.some(E.left(["error message"])),
             xeF.map({
                 onA: c => "a",
                 onB: c => "b",
                 onC: c => "c",
                 onD: c => "d"
             }),
-            x => { expect(x).toEqual(O.some(E.left(Error("error message")))) }
+            x => { expect(x).toEqual(O.some(E.left(["error message"]))) }
         )
     })
 
@@ -210,7 +210,7 @@ describe("Command fold", () => {
 
     test("should produce error string", () => {
         pipe(
-            O.some(E.left(Error(""))),
+            O.some(E.left([""])),
             xeF.fold({
                 onNone: () => "none",
                 onError: (e) => "error",
@@ -428,7 +428,7 @@ describe("comm1 with error", () => {
             reqOpts: ["o1", "o2"],
             f: ([args, opts]) =>
                 opts["o1"][0] == "" ?
-                    E.left(Error("o1 is not allowed to be an empty string")) :
+                    E.left(["o1 is not allowed to be an empty string"]) :
                     E.right({
                         _tag: "comm1",
                         arg: args[0],
@@ -439,7 +439,7 @@ describe("comm1 with error", () => {
         ),
         c => () => {
             expect(c({ name: "comm1", args: ["asdf"], opts: { o1: [""], o2: ["asdf"] } })).toEqual(
-                O.some(E.left(Error("o1 is not allowed to be an empty string"))
+                O.some(E.left(["o1 is not allowed to be an empty string"])
                 ))
         }
     ))
@@ -451,7 +451,7 @@ describe("comm1 with error", () => {
             reqOpts: ["o1", "o2"],
             f: ([args, opts]) =>
                 opts["o1"][0] == "" ?
-                    E.left(Error("o1 is not allowed to be an empty string")) :
+                    E.left(["o1 is not allowed to be an empty string"]) :
                     E.right({
                         _tag: "comm1",
                         arg: args[0],
