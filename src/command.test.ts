@@ -38,7 +38,7 @@ export const comm1: C.CommandConstructor<Command1> = C.getConstructor({
     tagOfA: "comm1",
     argCount: 1,
     reqOpts: ["o1", "o2"],
-    f: ([args, opts]) => (E.right({
+    innerConstructor: ([args, opts]) => (E.right({
         _tag: "comm1",
         arg: args[0],
         o1: opts["o1"][0],
@@ -51,7 +51,7 @@ export const comm3: C.CommandConstructor<Command3> = C.getConstructor({
     tagOfA: "comm3",
     argCount: 1,
     reqOpts: ["req"],
-    f: ([args, opts]) => (E.right({
+    innerConstructor: ([args, opts]) => (E.right({
         _tag: "comm3",
         arg: args[0],
         req: opts["req"][0],
@@ -68,7 +68,7 @@ export const comm4: C.CommandConstructor<Command4> = C.getConstructor({
     tagOfA: "comm4",
     argCount: 2,
     reqOpts: ["opt1", "opt2"],
-    f: ([args, opts]) => (E.right({
+    innerConstructor: ([args, opts]) => (E.right({
         _tag: "comm4",
         arg1: args[0],
         arg2: args[1],
@@ -82,7 +82,7 @@ export const comm2: C.CommandConstructor<Command2> = C.getConstructor({
     tagOfA: "comm2",
     argCount: 1,
     reqOpts: ["o3", "o4"],
-    f: ([args, opts]) => (E.right({
+    innerConstructor: ([args, opts]) => (E.right({
         _tag: "comm2",
         arg: args[0],
         o3: opts["o3"][0],
@@ -426,7 +426,7 @@ describe("comm1 with error", () => {
             tagOfA: "comm1",
             argCount: 1,
             reqOpts: ["o1", "o2"],
-            f: ([args, opts]) =>
+            innerConstructor: ([args, opts]) =>
                 opts["o1"][0] == "" ?
                     E.left(["o1 is not allowed to be an empty string"]) :
                     E.right({
@@ -449,7 +449,7 @@ describe("comm1 with error", () => {
             tagOfA: "comm1",
             argCount: 1,
             reqOpts: ["o1", "o2"],
-            f: ([args, opts]) =>
+            innerConstructor: ([args, opts]) =>
                 opts["o1"][0] == "" ?
                     E.left(["o1 is not allowed to be an empty string"]) :
                     E.right({

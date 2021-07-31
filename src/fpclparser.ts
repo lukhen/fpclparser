@@ -96,10 +96,10 @@ export interface CommandMeta<A> {
     tagOfA: string,
     argCount: number,
     reqOpts: string[],
-    f: F<A>
+    innerConstructor: InnerConstructor<A>
 }
 
-export type F<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
+export type InnerConstructor<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
 
 export type OptionEither<A> = O.Option<E.Either<string[], A>>;
 
@@ -120,7 +120,7 @@ export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstruct
                         E.Either<string[], CommandOptionDict>
                     ],
                 (x) => sequenceT(e)(...x),
-                E.chain(commandMeta.f)
+                E.chain(commandMeta.innerConstructor)
             ));
 
 }
