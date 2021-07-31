@@ -179,11 +179,11 @@ export const e: Applicative2<E.URI> = {
 /**
    Produce Either.right if d contains optNames, otherwise produce Either.left
 **/
-export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<Error, CommandOptionDict> {
+export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Either<string[], CommandOptionDict> {
     return d => pipe(
         optNames,
         A.map(optName => [optName, d[optName]] as [string, string[] | undefined]),
-        A.map(([optName, opt]) => E.fromNullable(Error(`Option ${optName} is missing`))(opt)),
+        A.map(([optName, opt]) => E.fromNullable([`Option ${optName} is missing`])(opt)),
         A.sequence(e),
         E.map(_ => d)
     );
@@ -192,12 +192,12 @@ export function ensureOpts(optNames: string[]): (d: CommandOptionDict) => E.Eith
 /**
    Produce Either.right is ss length is n, otherwise produce Either.left
 **/
-function ensureSize(n: number): (ss: string[]) => E.Either<Error, string[]> {
+function ensureSize(n: number): (ss: string[]) => E.Either<string[], string[]> {
     return ss => pipe(
         ss,
         E.fromPredicate(
             (x) => x.length == n,
-            () => Error("Invalid number of args")
+            () => ["Invalid number of args"]
         )
     );
 }

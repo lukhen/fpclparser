@@ -25,21 +25,21 @@ describe("comm4", () => {
     test("command name valid, args valid, option opt1 is missing", () => {
         pipe(
             comm4({ name: "comm4", args: ["arg1", "arg2"], opts: { opt2: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option opt1 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option opt1 is missing"]))) }
         )
     })
 
     test("command name valid, args valid, option opt2 is missing", () => {
         pipe(
             comm4({ name: "comm4", args: ["arg1", "arg2"], opts: { opt1: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option opt2 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option opt2 is missing"]))) }
         )
     })
 
     test("command name valid, args valid, option opt1 and opt2 are missing", () => {
         pipe(
             comm4({ name: "comm4", args: ["arg1", "arg2"], opts: {} }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option opt1 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option opt1 is missing"]))) }
         )
     })
 
@@ -56,7 +56,7 @@ describe("comm4", () => {
             comm4({ name: "comm4", args: [], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(Error("Invalid number of args"))))
+                    O.some(E.left(["Invalid number of args"])))
             }
         )
     })
@@ -66,7 +66,7 @@ describe("comm4", () => {
             comm4({ name: "comm4", args: ["arg1"], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(Error("Invalid number of args"))))
+                    O.some(E.left(["Invalid number of args"])))
             }
         )
     })
@@ -76,7 +76,7 @@ describe("comm4", () => {
             comm4({ name: "comm4", args: ["arg1"], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(Error("Invalid number of args"))))
+                    O.some(E.left(["Invalid number of args"])))
             }
         )
     })

@@ -290,21 +290,21 @@ describe("comm1", () => {
     test("command name valid, arg valid, option o1 is missing", () => {
         pipe(
             comm1({ name: "comm1", args: ["arg"], opts: { o4: ["asd"], o2: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o1 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o1 is missing"]))) }
         )
     })
 
     test("command name valid, arg valid, option o2 is missing", () => {
         pipe(
             comm1({ name: "comm1", args: ["arg"], opts: { o1: ["asd"], o5: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o2 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o2 is missing"]))) }
         )
     })
 
     test("command name valid, arg valid, option o1 and o2 are missing", () => {
         pipe(
             comm1({ name: "comm1", args: ["arg"], opts: {} }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o1 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o1 is missing"]))) }
         )
     })
 
@@ -337,21 +337,21 @@ describe("comm2", () => {
     test("command name valid, arg valid, option o3 is missing", () => {
         pipe(
             comm2({ name: "comm2", args: ["arg"], opts: { o100: ["asd"], o4: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o3 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o3 is missing"]))) }
         )
     })
 
     test("command name valid, arg valid, option o4 is missing", () => {
         pipe(
             comm2({ name: "comm2", args: ["arg"], opts: { o3: ["asd"], o100: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o4 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o4 is missing"]))) }
         )
     })
 
     test("command name valid, arg valid, option o3 and o4 are missing", () => {
         pipe(
             comm2({ name: "comm2", args: ["arg"], opts: {} }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option o3 is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option o3 is missing"]))) }
         )
     })
 
@@ -384,7 +384,7 @@ describe("comm3", () => {
     test("command name valid, arg valid, option req is missing", () => {
         pipe(
             comm3({ name: "comm3", args: ["arg"], opts: { xxx: ["asd"], opt: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option req is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option req is missing"]))) }
         )
     })
 
@@ -407,7 +407,7 @@ describe("comm3", () => {
     test("command name valid, arg valid, option req and opt are missing", () => {
         pipe(
             comm3({ name: "comm3", args: ["arg"], opts: {} }),
-            er => { expect(er).toEqual(O.some(E.left(Error("Option req is missing")))) }
+            er => { expect(er).toEqual(O.some(E.left(["Option req is missing"]))) }
         )
     })
 
