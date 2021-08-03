@@ -16,6 +16,13 @@ export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<str
     );
 }
 
+/**
+   Produce [name, args, opts] from argv.
+**/
+export function parseArgv2(argv: string[]): [string, string[], CommandOptionDict] {
+    return ["", [], {}]
+}
+
 
 export function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(
