@@ -21,7 +21,9 @@ export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<str
    Element 0 in argv is always expected to be the command name.
 **/
 export function parseArgv2(argv: string[]): [string, string[], CommandOptionDict] {
-    return argv.length == 0 ? ["", [], {}] : [argv[0], getArgs(argv), {}]
+    return argv.length == 0
+        ? ["", [], {}]
+        : [argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv))]
 }
 
 
