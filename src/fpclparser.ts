@@ -33,6 +33,17 @@ export const parsedCommandHasName: ParsedCommandHasName = function(n) {
     return ([name, args, opts]) => n == name ? O.some([name, args, opts]) : O.none
 }
 
+type EnsureParsedCommandArgsSize = (argsSize: number) => (parsedCommand: [string, string[], CommandOptionDict]) =>
+    E.Either<string[], [string, string[], CommandOptionDict]>
+
+export const ensureParsedCommandArgsSize: EnsureParsedCommandArgsSize = function(as) {
+    return ([name, args, opts]) => pipe(
+        args,
+        ensureSize(as),
+        E.map(args => [name, args, opts])
+    )
+}
+
 export function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(
         argv,
