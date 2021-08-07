@@ -26,6 +26,12 @@ export function parseArgv2(argv: string[]): [string, string[], CommandOptionDict
         : [argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv))]
 }
 
+type ParsedCommandHasName = (name: string) => (parsedCommand: [string, string[], CommandOptionDict]) =>
+    O.Option<[string, string[], CommandOptionDict]>
+
+export const parsedCommandHasName: ParsedCommandHasName = function(n) {
+    return ([name, args, opts]) => n == name ? O.some([name, args, opts]) : O.none
+}
 
 export function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(
