@@ -1,4 +1,4 @@
-import { parsedCommandHasName, ensureParsedCommandArgsSize } from "./fpclparser"
+import { parsedCommandHasName, ensureParsedCommandArgsSize, ensureParsedCommandOpts } from "./fpclparser"
 import * as O from "fp-ts/lib/Option"
 import * as E from "fp-ts/lib/Either"
 
@@ -38,4 +38,21 @@ describe("ensureParsedCommandArgsSize", () => {
 
 
 
+describe("ensureParsedCommandOpts", () => {
+    test("no opts", () => {
+        expect(ensureParsedCommandOpts([])(["somename", [], {}])).toEqual(
+            E.right(["somename", [], {}])
+        )
+    })
 
+    test("one option, success", () => {
+        expect(ensureParsedCommandOpts(["opt1"])(["somename", [], { opt1: ["value"] }])).toEqual(
+            E.right(["somename", [], { opt1: ["value"] }])
+        )
+    })
+
+    test("one option, failure", () => {
+        expect(E.isLeft(ensureParsedCommandOpts(["opt1"])(["somename", [], {}]))).toBeTruthy()
+
+    })
+})

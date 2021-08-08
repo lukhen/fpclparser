@@ -44,6 +44,17 @@ export const ensureParsedCommandArgsSize: EnsureParsedCommandArgsSize = function
     )
 }
 
+type EnsureParsedCommandOpts = (reqOpts: string[]) => (parsedCommand: [string, string[], CommandOptionDict]) =>
+    E.Either<string[], [string, string[], CommandOptionDict]>
+
+export const ensureParsedCommandOpts: EnsureParsedCommandOpts = function(reqOpts) {
+    return ([name, args, opts]) => pipe(
+        opts,
+        ensureOpts(reqOpts),
+        E.map(opts => [name, args, opts])
+    )
+}
+
 export function getAllOptionList(argv: string[]): CommandOption[] {
     return pipe(
         argv,
