@@ -27,10 +27,10 @@ export function parseArgv2(argv: string[]): [string, string[], CommandOptionDict
 }
 
 type ParsedCommandHasName = (name: string) => (parsedCommand: [string, string[], CommandOptionDict]) =>
-    O.Option<[string, string[], CommandOptionDict]>
+    E.Either<string[], [string, string[], CommandOptionDict]>
 
 export const parsedCommandHasName: ParsedCommandHasName = function(n) {
-    return ([name, args, opts]) => n == name ? O.some([name, args, opts]) : O.none
+    return ([name, args, opts]) => n == name ? E.right([name, args, opts]) : E.left(["wrong name"])
 }
 
 type EnsureParsedCommandArgsSize = (argsSize: number) => (parsedCommand: [string, string[], CommandOptionDict]) =>

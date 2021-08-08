@@ -4,14 +4,14 @@ import * as E from "fp-ts/lib/Either"
 
 describe("", () => {
     test("", () => {
-        expect(parsedCommandHasName("name")(["othername", ["arg1", "arg2"], { opt1: ["value"] }])).toEqual(
-            O.none
-        )
+        expect(
+            E.isLeft(
+                parsedCommandHasName("name")(["othername", ["arg1", "arg2"], { opt1: ["value"] }]))).toBeTruthy()
     })
 
     test("", () => {
         expect(parsedCommandHasName("name")(["name", ["arg1", "arg2"], { opt1: ["value"] }])).toEqual(
-            O.some(["name", ["arg1", "arg2"], { opt1: ["value"] }])
+            E.right(["name", ["arg1", "arg2"], { opt1: ["value"] }])
         )
     })
 
