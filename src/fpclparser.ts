@@ -137,7 +137,18 @@ export interface CommandMeta<A> {
     innerConstructor: InnerConstructor<A>
 }
 
+
+export interface CommandMeta_<A> {
+    tagOfA: string,
+    argCount: number,
+    reqOpts: string[],
+    innerConstructor: InnerConstructor_<A>
+}
+
+
 export type InnerConstructor<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
+
+export type InnerConstructor_<A> = (d: [string, string[], CommandOptionDict]) => E.Either<string[], A>
 
 export type OptionEither<A> = O.Option<E.Either<string[], A>>;
 
@@ -162,6 +173,22 @@ export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstruct
             ));
 
 }
+
+
+/**
+   Produce a function that produces a CommandAbs from CommandData
+**/
+export function getConstructor_<A>(commandMeta: CommandMeta_<A>): CommandConstructor_<A> {
+    return ([name, args, opts]) => pipe(
+        [name, args, opts],
+        parsedCommandHasName(commandMeta.tagOfA),
+        E.chain(ensureParsedCommandOpts(commandMeta.reqOpts)),
+        E.chain(ensureParsedCommandArgsSize(commandMeta.argCount)),
+        E.chain(commandMeta.innerConstructor)
+    )
+}
+
+
 /**
    Data provided by the user in argv to produce a Command.
 **/
@@ -171,10 +198,22 @@ export interface CommandData {
     opts: CommandOptionDict
 }
 
+export type CommandData_ = [
+    string,
+    string[],
+    CommandOptionDict
+]
+
 /**
    Type of a function that produces CommandAbs from CommandData.
 **/
 export type CommandConstructor<A> = (commandData: CommandData) => OptionEither<A>;
+
+/**
+ ...
+**/
+export type CommandConstructor_<A> = (commandData: CommandData_) => E.Either<string[], A>;
+
 
 /**
 A single command option in argv, name is option's name, and values is option's value.

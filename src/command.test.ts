@@ -47,11 +47,42 @@ export const comm1: C.CommandConstructor<Command1> = C.getConstructor({
 }
 )
 
+
+export const comm1_: C.CommandConstructor_<Command1> = C.getConstructor_({
+    tagOfA: "comm1",
+    argCount: 1,
+    reqOpts: ["o1", "o2"],
+    innerConstructor: ([_, args, opts]) => (E.right({
+        _tag: "comm1",
+        arg: args[0],
+        o1: opts["o1"][0],
+        o2: opts["o2"][0]
+    }))
+}
+)
+
 export const comm3: C.CommandConstructor<Command3> = C.getConstructor({
     tagOfA: "comm3",
     argCount: 1,
     reqOpts: ["req"],
     innerConstructor: ([args, opts]) => (E.right({
+        _tag: "comm3",
+        arg: args[0],
+        req: opts["req"][0],
+        opt: pipe(
+            O.fromNullable(opts["opt"]),
+            O.map(opt => opt[0])
+        )
+
+    }))
+}
+)
+
+export const comm3_: C.CommandConstructor_<Command3> = C.getConstructor_({
+    tagOfA: "comm3",
+    argCount: 1,
+    reqOpts: ["req"],
+    innerConstructor: ([name, args, opts]) => (E.right({
         _tag: "comm3",
         arg: args[0],
         req: opts["req"][0],
@@ -78,11 +109,39 @@ export const comm4: C.CommandConstructor<Command4> = C.getConstructor({
 }
 )
 
+
+export const comm4_: C.CommandConstructor_<Command4> = C.getConstructor_({
+    tagOfA: "comm4",
+    argCount: 2,
+    reqOpts: ["opt1", "opt2"],
+    innerConstructor: ([name, args, opts]) => (E.right({
+        _tag: "comm4",
+        arg1: args[0],
+        arg2: args[1],
+        opt1: opts["opt1"][0],
+        opt2: opts["opt2"][0]
+    }))
+}
+)
+
 export const comm2: C.CommandConstructor<Command2> = C.getConstructor({
     tagOfA: "comm2",
     argCount: 1,
     reqOpts: ["o3", "o4"],
     innerConstructor: ([args, opts]) => (E.right({
+        _tag: "comm2",
+        arg: args[0],
+        o3: opts["o3"][0],
+        o4: opts["o4"][0]
+    }))
+}
+)
+
+export const comm2_: C.CommandConstructor_<Command2> = C.getConstructor_({
+    tagOfA: "comm2",
+    argCount: 1,
+    reqOpts: ["o3", "o4"],
+    innerConstructor: ([name, args, opts]) => (E.right({
         _tag: "comm2",
         arg: args[0],
         o3: opts["o3"][0],
@@ -270,6 +329,54 @@ describe("Command fold", () => {
     })
 })
 
+describe("comm1_", () => {
+    test("command name valid, arg valid, all options valid", () => {
+        pipe(
+            comm1_(["comm1", ["arg"], { o1: ["asd"], o2: ["qewr"] }]),
+            a => {
+                expect(a).toEqual(
+                    E.right({
+                        _tag: "comm1",
+                        arg: "arg",
+                        o1: "asd",
+                        o2: "qewr"
+                    } as Command1))
+            }
+        )
+    })
+
+
+    test("command name valid, arg valid, option o1 is missing", () => {
+        pipe(
+            comm1_(["comm1", ["arg"], { o4: ["asd"], o2: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option o1 is missing"])) }
+        )
+    })
+
+    test("command name valid, arg valid, option o2 is missing", () => {
+        pipe(
+            comm1_(["comm1", ["arg"], { o1: ["asd"], o5: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option o2 is missing"])) }
+        )
+    })
+
+    test("command name valid, arg valid, option o1 and o2 are missing", () => {
+        pipe(
+            comm1_(["comm1", ["arg"], {}]),
+            er => { expect(er).toEqual(E.left(["Option o1 is missing"])) }
+        )
+    })
+
+
+    test("command name invalid, arg valid, all options valid", () => {
+        pipe(
+            comm1_(["invalidcommadn", ["arg"], { o1: ["value3"], o2: ["value4"] }]),
+            x => { expect(E.isLeft(x)).toBeTruthy() }
+        )
+    })
+
+})
+
 describe("comm1", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
@@ -364,6 +471,53 @@ describe("comm2", () => {
     })
 })
 
+describe("comm2_", () => {
+    test("command name valid, arg valid, all options valid", () => {
+        pipe(
+            comm2_(["comm2", ["arg"], { o3: ["asd"], o4: ["qewr"] }]),
+            a => {
+                expect(a).toEqual(
+                    E.right({
+                        _tag: "comm2",
+                        arg: "arg",
+                        o3: "asd",
+                        o4: "qewr"
+                    } as Command2))
+            }
+        )
+    })
+
+    test("command name valid, arg valid, option o3 is missing", () => {
+        pipe(
+            comm2_(["comm2", ["arg"], { o100: ["asd"], o4: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option o3 is missing"])) }
+        )
+    })
+
+    test("command name valid, arg valid, option o4 is missing", () => {
+        pipe(
+            comm2_(["comm2", ["arg"], { o3: ["asd"], o100: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option o4 is missing"])) }
+        )
+    })
+
+    test("command name valid, arg valid, option o3 and o4 are missing", () => {
+        pipe(
+            comm2_(["comm2", ["arg"], {}]),
+            er => { expect(er).toEqual(E.left(["Option o3 is missing"])) }
+        )
+    })
+
+
+    test("command name invalid, arg valid, all options valid", () => {
+        pipe(
+            comm2_(["invalidcommadn", ["arg"], { o3: ["value3"], o4: ["value4"] }]),
+            x => { expect(E.isLeft(x)).toBeTruthy() }
+        )
+    })
+})
+
+
 describe("comm3", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
@@ -420,6 +574,61 @@ describe("comm3", () => {
     })
 })
 
+describe("comm3_", () => {
+    test("command name valid, arg valid, all options valid", () => {
+        pipe(
+            comm3_(["comm3", ["arg"], { req: ["asd"], opt: ["qewr"] }]),
+            a => {
+                expect(a).toEqual(
+                    E.right({
+                        _tag: "comm3",
+                        arg: "arg",
+                        req: "asd",
+                        opt: O.some("qewr")
+                    } as Command3))
+            }
+        )
+    })
+
+    test("command name valid, arg valid, option req is missing", () => {
+        pipe(
+            comm3_(["comm3", ["arg"], { xxx: ["asd"], opt: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option req is missing"])) }
+        )
+    })
+
+    test("command name valid, arg valid, option opt is missing", () => {
+        pipe(
+            comm3_(["comm3", ["arg"], { req: ["asd"], xxx: ["qewr"] }]),
+            a => {
+                expect(a).toEqual(
+                    E.right({
+                        _tag: "comm3",
+                        arg: "arg",
+                        req: "asd",
+                        opt: O.none
+                    } as Command3))
+            }
+        )
+    })
+
+    test("command name valid, arg valid, option req and opt are missing", () => {
+        pipe(
+            comm3_(["comm3", ["arg"], {}]),
+            er => { expect(er).toEqual(E.left(["Option req is missing"])) }
+        )
+    })
+
+
+    test("command name invalid, arg valid, all options valid", () => {
+        pipe(
+            comm3_(["invalidcommadn", ["arg"], { req: ["value3"], opt: ["value4"] }]),
+            x => { expect(E.isLeft(x)).toBeTruthy() }
+        )
+    })
+})
+
+
 describe("comm1 with error", () => {
     test("error if o1 is an empty string", pipe(
         C.getConstructor<Command1>({
@@ -464,6 +673,56 @@ describe("comm1 with error", () => {
             expect(c({ name: "comm1", args: ["asdf"], opts: { o1: ["notEmpty"], o2: ["asdf"] } })).toEqual(
                 O.some(E.right({ _tag: "comm1", arg: "asdf", o1: "notEmpty", o2: "asdf" })
                 ))
+        }
+    ))
+
+})
+
+
+describe("comm1_ with error", () => {
+    test("error if o1 is an empty string", pipe(
+        C.getConstructor_<Command1>({
+            tagOfA: "comm1",
+            argCount: 1,
+            reqOpts: ["o1", "o2"],
+            innerConstructor: ([name, args, opts]) =>
+                opts["o1"][0] == "" ?
+                    E.left(["o1 is not allowed to be an empty string"]) :
+                    E.right({
+                        _tag: "comm1",
+                        arg: args[0],
+                        o1: opts["o1"][0],
+                        o2: opts["o2"][0]
+                    })
+        }
+        ),
+        c => () => {
+            expect(c(["comm1", ["asdf"], { o1: [""], o2: ["asdf"] }])).toEqual(
+                E.left(["o1 is not allowed to be an empty string"])
+            )
+        }
+    ))
+
+    test("produce Command1 if o1 is not an empty string", pipe(
+        C.getConstructor_<Command1>({
+            tagOfA: "comm1",
+            argCount: 1,
+            reqOpts: ["o1", "o2"],
+            innerConstructor: ([name, args, opts]) =>
+                opts["o1"][0] == "" ?
+                    E.left(["o1 is not allowed to be an empty string"]) :
+                    E.right({
+                        _tag: "comm1",
+                        arg: args[0],
+                        o1: opts["o1"][0],
+                        o2: opts["o2"][0]
+                    })
+        }
+        ),
+        c => () => {
+            expect(c(["comm1", ["asdf"], { o1: ["notEmpty"], o2: ["asdf"] }])).toEqual(
+                E.right({ _tag: "comm1", arg: "asdf", o1: "notEmpty", o2: "asdf" })
+            )
         }
     ))
 
