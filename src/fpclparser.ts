@@ -6,7 +6,7 @@ import * as R from "fp-ts/lib/Record";
 import { sequenceT } from "fp-ts/lib/Apply";
 import { Applicative2 } from "fp-ts/lib/Applicative";
 
-
+// obsolete
 export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => OptionEither<A> {
     return argv => pipe(
         comms,

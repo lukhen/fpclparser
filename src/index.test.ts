@@ -8,7 +8,7 @@ import {
 } from "./command.test"
 import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv, parseArgv_ } from "./fpclparser"
 
-
+// obsolete
 describe("parseArgv", () => {
     test("Command 1 from xcomm1 constructor", () => {
         expect(parseArgv([comm1])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1({
