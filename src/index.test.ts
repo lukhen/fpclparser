@@ -2,9 +2,11 @@ import * as E from "fp-ts/lib/Either"
 import * as O from "fp-ts/lib/Option"
 import {
     comm1,
-    comm2
+    comm2,
+    comm1_,
+    comm2_
 } from "./command.test"
-import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv } from "./fpclparser"
+import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv, parseArgv_ } from "./fpclparser"
 
 
 describe("parseArgv", () => {
@@ -33,6 +35,34 @@ describe("parseArgv", () => {
 
 
 })
+
+describe("parseArgv_", () => {
+    test("Command 1 from xcomm1 constructor", () => {
+        expect(parseArgv_([comm1_])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1_([
+            "comm1",
+            ["arg1"],
+            getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
+        ]
+        ))
+    })
+
+    test("Command2 from xcomm2 constructor", () => {
+        expect(parseArgv_([comm1_, comm2_])(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+            .toEqual(comm2_([
+                "comm2",
+                ["arg1"],
+                getOptionDict(getAllOptionList(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+            ]))
+    })
+
+    test("Bad command", () => {
+        expect(E.isLeft(parseArgv_([comm1_, comm2_])(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"])))
+            .toBeTruthy()
+    })
+
+
+})
+
 
 describe("explodeTailTip", () => {
     test("different", () => {

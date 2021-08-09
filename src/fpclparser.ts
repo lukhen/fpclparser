@@ -16,6 +16,15 @@ export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<str
     );
 }
 
+export function parseArgv_<A>(comms: CommandConstructor_<any>[]): (argv: Array<string>) => E.Either<string[], A> {
+    return argv => pipe(
+        comms,
+        A.map(comm => comm([argv[0], getArgs(argv), getOptionDict(getAllOptionList(argv))])),
+        A.filter(e => E.isRight(e)),
+        x => A.isEmpty(x) ? E.left(["wrong name"]) : x[0]
+    );
+}
+
 /**
    Produce [name, args, opts] from argv.
    Element 0 in argv is always expected to be the command name.
