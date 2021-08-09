@@ -33,7 +33,7 @@ export interface Command4 {
     opt2: string;
 }
 
-
+// obsolete
 export const comm1: C.CommandConstructor<Command1> = C.getConstructor({
     tagOfA: "comm1",
     argCount: 1,
@@ -61,6 +61,7 @@ export const comm1_: C.CommandConstructor_<Command1> = C.getConstructor_({
 }
 )
 
+// obsolete
 export const comm3: C.CommandConstructor<Command3> = C.getConstructor({
     tagOfA: "comm3",
     argCount: 1,
@@ -95,6 +96,7 @@ export const comm3_: C.CommandConstructor_<Command3> = C.getConstructor_({
 }
 )
 
+//obsolete
 export const comm4: C.CommandConstructor<Command4> = C.getConstructor({
     tagOfA: "comm4",
     argCount: 2,
@@ -124,6 +126,7 @@ export const comm4_: C.CommandConstructor_<Command4> = C.getConstructor_({
 }
 )
 
+// obsolete
 export const comm2: C.CommandConstructor<Command2> = C.getConstructor({
     tagOfA: "comm2",
     argCount: 1,
@@ -377,6 +380,7 @@ describe("comm1_", () => {
 
 })
 
+// obsolete
 describe("comm1", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
@@ -424,6 +428,8 @@ describe("comm1", () => {
     })
 })
 
+
+// obsolete
 describe("comm2", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
@@ -517,7 +523,7 @@ describe("comm2_", () => {
     })
 })
 
-
+// obsolete
 describe("comm3", () => {
     test("command name valid, arg valid, all options valid", () => {
         pipe(
@@ -628,7 +634,7 @@ describe("comm3_", () => {
     })
 })
 
-
+// obsolete
 describe("comm1 with error", () => {
     test("error if o1 is an empty string", pipe(
         C.getConstructor<Command1>({

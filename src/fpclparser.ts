@@ -130,6 +130,7 @@ function isOption(s: string) {
     return s.startsWith("--");
 }
 
+// obsolete
 export interface CommandMeta<A> {
     tagOfA: string,
     argCount: number,
@@ -145,13 +146,16 @@ export interface CommandMeta_<A> {
     innerConstructor: InnerConstructor_<A>
 }
 
-
+// obsolete
 export type InnerConstructor<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
 
 export type InnerConstructor_<A> = (d: [string, string[], CommandOptionDict]) => E.Either<string[], A>
 
+// obsolete    
 export type OptionEither<A> = O.Option<E.Either<string[], A>>;
 
+
+// obsolete
 /**
    Produce a function that produces a CommandAbs from CommandData
 **/
@@ -189,6 +193,7 @@ export function getConstructor_<A>(commandMeta: CommandMeta_<A>): CommandConstru
 }
 
 
+// obsolete
 /**
    Data provided by the user in argv to produce a Command.
 **/
@@ -204,6 +209,8 @@ export type CommandData_ = [
     CommandOptionDict
 ]
 
+
+// obsolete
 /**
    Type of a function that produces CommandAbs from CommandData.
 **/
