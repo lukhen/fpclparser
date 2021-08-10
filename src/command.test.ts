@@ -170,6 +170,140 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
 }
 
 const oeF = C.getOptionEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
+const oeF_ = C.getEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
+
+
+describe("___ Either4 map", () => {
+    test("error", () => {
+        pipe(
+            E.left(["error message"]),
+            oeF_.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(E.left(["error message"])) }
+        )
+    })
+
+    test("a", () => {
+        pipe(
+            E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as Command1),
+            oeF_.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(E.right("a")) }
+        )
+    })
+
+    test("b", () => {
+        pipe(
+            E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as Command2),
+            oeF_.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(E.right("b")) }
+        )
+    })
+
+    test("c", () => {
+        pipe(
+            E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as Command3),
+            oeF_.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(E.right("c")) }
+        )
+    })
+
+    test("d", () => {
+        pipe(
+            E.right({ _tag: "comm4", arg1: "arg1", arg2: "arg2", opt1: "", opt2: "" } as Command4),
+            oeF_.map({
+                onA: c => "a",
+                onB: c => "b",
+                onC: c => "c",
+                onD: c => "d"
+            }),
+            x => { expect(x).toEqual(E.right("d")) }
+        )
+    })
+
+
+})
+
+describe("___ Command fold", () => {
+
+    test("should produce error string", () => {
+        pipe(
+            E.left([""]),
+            oeF_.fold({
+                onError: (e) => "error",
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
+            }),
+            x => { expect(x).toEqual("error") }
+        )
+    })
+
+
+    test("should produce command1 string for Command1", () => {
+        pipe(
+            E.right({ _tag: "comm1", arg: "arg", o1: "", o2: "" } as Command1),
+            oeF_.fold({
+                onError: (e) => "error",
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
+            }),
+            x => { expect(x).toEqual("command1") }
+        )
+    })
+
+    test("should produce command2 string for Command2", () => {
+        pipe(
+            E.right({ _tag: "comm2", arg: "arg", o3: "", o4: "" } as Command2),
+            oeF_.fold({
+                onError: (e) => "error",
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
+            }),
+            x => { expect(x).toEqual("command2") }
+        )
+    })
+
+    test("should produce command3 string for Command3", () => {
+        pipe(
+            E.right({ _tag: "comm3", arg: "arg", req: "", opt: O.none } as Command3),
+            oeF_.fold({
+                onError: (e) => "error",
+                onA: c => "command1",
+                onB: c => "command2",
+                onC: c => "command3",
+                onD: c => "command4"
+            }),
+            x => { expect(x).toEqual("command3") }
+        )
+    })
+})
+
+
+
 
 describe("OptionEither4 map", () => {
     test("none", () => {
@@ -252,6 +386,9 @@ describe("OptionEither4 map", () => {
 
 
 })
+
+
+
 
 describe("Command fold", () => {
 

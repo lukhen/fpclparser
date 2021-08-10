@@ -363,6 +363,51 @@ export function getOptionEitherFoldable4Instance<A, B, C, D>(preds: {
     }
 }
 
+export function getEitherFoldable4Instance<A, B, C, D>(preds: {
+    isA: (c: A | B | C | D) => c is A,
+    isB: (c: A | B | C | D) => c is B,
+    isC: (c: A | B | C | D) => c is C
+    isD: (c: A | B | C | D) => c is D
+}): {
+    fold: <X>(handlers: {
+        onError: (e: string[]) => X,
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+        onC: (c: C) => X,
+        onD: (c: D) => X
+    }) => (c: E.Either<string[], A | B | C | D>) => X,
+    map: <X>(handlers: {
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+        onC: (c: C) => X,
+        onD: (c: D) => X
+    }) => (xe: E.Either<string[], A | B | C | D>) => E.Either<string[], X>
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            E.fold(
+                handlers.onError,
+                c => preds.isA(c)
+                    ? handlers.onA(c)
+                    : preds.isB(c)
+                        ? handlers.onB(c) :
+                        preds.isC(c)
+                            ? handlers.onC(c) :
+                            handlers.onD(c)
+            )
+        ),
+        map: handlers => xe => E.map((c: A | B | C | D) =>
+            preds.isA(c) ? handlers.onA(c)
+                : preds.isB(c) ? handlers.onB(c) :
+                    preds.isC(c) ? handlers.onC(c) :
+                        handlers.onD(c))(xe)
+
+    }
+}
+
+
+
 export function getOptionEitherFoldable3Instance<A, B, C>(preds: {
     isA: (c: A | B | C) => c is A,
     isB: (c: A | B | C) => c is B,
