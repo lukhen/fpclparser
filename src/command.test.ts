@@ -169,6 +169,7 @@ export function isCommand4(c: Command1 | Command2 | Command3 | Command4): c is C
     return c._tag == "comm4"
 }
 
+// obsolete
 const oeF = C.getOptionEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
 const oeF_ = C.getEitherFoldable4Instance({ isA: isCommand1, isB: isCommand2, isC: isCommand3, isD: isCommand4 })
 
@@ -304,7 +305,7 @@ describe("___ Command fold", () => {
 
 
 
-
+// obsolete
 describe("OptionEither4 map", () => {
     test("none", () => {
         pipe(
@@ -389,7 +390,7 @@ describe("OptionEither4 map", () => {
 
 
 
-
+// obsolete
 describe("Command fold", () => {
 
     test("should produce none string", () => {

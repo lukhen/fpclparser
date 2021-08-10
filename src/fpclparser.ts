@@ -295,10 +295,14 @@ function ensureSize(n: number): (ss: string[]) => E.Either<string[], string[]> {
     );
 }
 
+
+// obsolete
 export function map<X, A>(f: ((c1: A) => X)): (xe: OptionEither<A>) => OptionEither<X> {
     return xe => O.map((e: E.Either<string[], A>) => E.map((c1: A) => f(c1))(e))(xe)
 }
 
+
+// obsolete
 export function fold<X, A>(handlers: {
     onNone: () => X,
     onError: (e: string[]) => X,
@@ -316,6 +320,7 @@ export function fold<X, A>(handlers: {
     )
 }
 
+// obsolete
 export function getOptionEitherFoldable4Instance<A, B, C, D>(preds: {
     isA: (c: A | B | C | D) => c is A,
     isB: (c: A | B | C | D) => c is B,
