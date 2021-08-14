@@ -413,6 +413,8 @@ export function getEitherFoldable4Instance<A, B, C, D>(preds: {
 
 
 
+
+// obsolete
 export function getOptionEitherFoldable3Instance<A, B, C>(preds: {
     isA: (c: A | B | C) => c is A,
     isB: (c: A | B | C) => c is B,
@@ -454,7 +456,44 @@ export function getOptionEitherFoldable3Instance<A, B, C>(preds: {
     }
 }
 
+export function getEitherFoldable3Instance<A, B, C>(preds: {
+    isA: (c: A | B | C) => c is A,
+    isB: (c: A | B | C) => c is B,
+    isC: (c: A | B | C) => c is C
+}): {
+    fold: <X>(handlers: {
+        onError: (e: string[]) => X,
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+        onC: (c: C) => X,
+    }) => (c: E.Either<string[], A | B | C>) => X,
+    map: <X>(handlers: {
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+        onC: (c: C) => X,
+    }) => (xe: E.Either<string[], A | B | C>) => E.Either<string[], X>
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            E.fold(
+                handlers.onError,
+                c => preds.isA(c)
+                    ? handlers.onA(c)
+                    : preds.isB(c)
+                        ? handlers.onB(c) :
+                        handlers.onC(c)
+            )
+        ),
+        map: handlers => xe => E.map((c: A | B | C) =>
+            preds.isA(c) ? handlers.onA(c)
+                : preds.isB(c) ? handlers.onB(c) :
+                    handlers.onC(c))(xe)
+    }
+}
 
+
+// obsolete
 export function getOptionEitherFoldable2Instance<A, B>(preds: {
     isA: (c: A | B) => c is A,
     isB: (c: A | B) => c is B,
@@ -485,5 +524,36 @@ export function getOptionEitherFoldable2Instance<A, B>(preds: {
         ),
         map: handlers => xe => O.map((e: E.Either<string[], A | B>) => E.map((c: A | B) =>
             preds.isA(c) ? handlers.onA(c) : handlers.onB(c))(e))(xe)
+    }
+}
+
+
+export function getEitherFoldable2Instance<A, B>(preds: {
+    isA: (c: A | B) => c is A,
+    isB: (c: A | B) => c is B,
+}): {
+    fold: <X>(handlers: {
+        onError: (e: string[]) => X,
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+    }) => (c: E.Either<string[], A | B>) => X,
+    map: <X>(handlers: {
+        onA: (c: A) => X,
+        onB: (c: B) => X,
+    }) => (xe: E.Either<string[], A | B>) => E.Either<string[], X>
+} {
+    return {
+        fold: handlers => c => pipe(
+            c,
+            E.fold(
+                handlers.onError,
+                c => preds.isA(c)
+                    ? handlers.onA(c) :
+                    handlers.onB(c)
+            )
+        ),
+        map: handlers => xe => E.map((c: A | B) =>
+            preds.isA(c) ? handlers.onA(c)
+                : handlers.onB(c))(xe)
     }
 }
