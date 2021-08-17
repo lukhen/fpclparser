@@ -7,7 +7,7 @@ import { sequenceT } from "fp-ts/lib/Apply";
 import { Applicative2 } from "fp-ts/lib/Applicative";
 
 
-export function parseArgv_<A>(comms: CommandConstructor_<any>[]): (argv: Array<string>) => E.Either<string[], A> {
+export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => E.Either<string[], A> {
     return argv => pipe(
         comms,
         A.map(comm => comm(parseArgv2(argv))),
@@ -130,20 +130,20 @@ function isOption(s: string) {
     return s.startsWith("--");
 }
 
-export interface CommandMeta_<A> {
+export interface CommandMeta<A> {
     tagOfA: string,
     argCount: number,
     reqOpts: string[],
-    innerConstructor: InnerConstructor_<A>
+    innerConstructor: InnerConstructor<A>
 }
 
 
-export type InnerConstructor_<A> = (d: [string, string[], CommandOptionDict]) => E.Either<string[], A>
+export type InnerConstructor<A> = (d: [string, string[], CommandOptionDict]) => E.Either<string[], A>
 
 /**
    Produce a function that produces a CommandAbs from CommandData
 **/
-export function getConstructor_<A>(commandMeta: CommandMeta_<A>): CommandConstructor_<A> {
+export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstructor<A> {
     return ([name, args, opts]) => pipe(
         [name, args, opts],
         parsedCommandHasName(commandMeta.tagOfA),
@@ -153,7 +153,7 @@ export function getConstructor_<A>(commandMeta: CommandMeta_<A>): CommandConstru
     )
 }
 
-export type CommandData_ = [
+export type CommandData = [
     string,
     string[],
     CommandOptionDict
@@ -163,7 +163,7 @@ export type CommandData_ = [
 /**
  ...
 **/
-export type CommandConstructor_<A> = (commandData: CommandData_) => E.Either<string[], A>;
+export type CommandConstructor<A> = (commandData: CommandData) => E.Either<string[], A>;
 
 
 /**

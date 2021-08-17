@@ -1,4 +1,4 @@
-import { getAllOptionList, getOptionDict, getArgs, parseArgv_ } from "./fpclparser"
+import { getAllOptionList, getOptionDict, getArgs, parseArgv } from "./fpclparser"
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
@@ -86,7 +86,7 @@ describe("comm4", () => {
 describe("parseArgvMultipleArgs", () => {
     test("commWithMultipleArgs", () => {
         const argv: string[] = ["commwithmultipleargs", "arg1", "arg2", "--opt1", "opt1-value", "--opt2", "opt2-value"]
-        expect(parseArgv_([comm4_])(argv)).toEqual(
+        expect(parseArgv([comm4_])(argv)).toEqual(
             comm4_(["commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv))])
         )
     })

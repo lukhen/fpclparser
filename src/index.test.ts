@@ -4,12 +4,12 @@ import {
     comm1_,
     comm2_
 } from "./command.test"
-import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv_ } from "./fpclparser"
+import { getOptionDict, getAllOptionList, explodeTailTip, getOpt, parseArgv } from "./fpclparser"
 
 
 describe("parseArgv_", () => {
     test("Command 1 from xcomm1 constructor", () => {
-        expect(parseArgv_([comm1_])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1_([
+        expect(parseArgv([comm1_])(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"])).toEqual(comm1_([
             "comm1",
             ["arg1"],
             getOptionDict(getAllOptionList(["comm1", "arg1", "--o1", "Łukasz", "--o2", "Hen"]))
@@ -18,7 +18,7 @@ describe("parseArgv_", () => {
     })
 
     test("Command2 from xcomm2 constructor", () => {
-        expect(parseArgv_([comm1_, comm2_])(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
+        expect(parseArgv([comm1_, comm2_])(["comm2", "arg1", "--o3", "value1", "--o4", "value2"]))
             .toEqual(comm2_([
                 "comm2",
                 ["arg1"],
@@ -27,7 +27,7 @@ describe("parseArgv_", () => {
     })
 
     test("Bad command", () => {
-        expect(E.isLeft(parseArgv_([comm1_, comm2_])(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"])))
+        expect(E.isLeft(parseArgv([comm1_, comm2_])(["badcommand ", "arg1", "--o1", "value1", "--o2", "value2"])))
             .toBeTruthy()
     })
 
