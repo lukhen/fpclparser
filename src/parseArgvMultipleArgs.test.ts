@@ -1,82 +1,81 @@
-import { getAllOptionList, getOptionDict, getArgs, parseArgv } from "./fpclparser"
+import { getAllOptionList, getOptionDict, getArgs, parseArgv_ } from "./fpclparser"
 import * as E from "fp-ts/lib/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/lib/Option";
-import { comm4, Command4 } from "./command.test";
+import { Command4, comm4_ } from "./command.test";
 
 describe("comm4", () => {
     test("command name valid, args valid, all options valid", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1", "arg2"], opts: { opt1: ["asd"], opt2: ["qewr"] } }),
+            comm4_(["comm4", ["arg1", "arg2"], { opt1: ["asd"], opt2: ["qewr"] }]),
             a => {
                 expect(a).toEqual(
-                    O.some(
-                        E.right({
-                            _tag: "comm4",
-                            arg1: "arg1",
-                            arg2: "arg2",
-                            opt1: "asd",
-                            opt2: "qewr"
-                        } as Command4)))
+                    E.right({
+                        _tag: "comm4",
+                        arg1: "arg1",
+                        arg2: "arg2",
+                        opt1: "asd",
+                        opt2: "qewr"
+                    } as Command4))
             }
         )
     })
 
     test("command name valid, args valid, option opt1 is missing", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1", "arg2"], opts: { opt2: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(["Option opt1 is missing"]))) }
+            comm4_(["comm4", ["arg1", "arg2"], { opt2: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option opt1 is missing"])) }
         )
     })
 
     test("command name valid, args valid, option opt2 is missing", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1", "arg2"], opts: { opt1: ["qewr"] } }),
-            er => { expect(er).toEqual(O.some(E.left(["Option opt2 is missing"]))) }
+            comm4_(["comm4", ["arg1", "arg2"], { opt1: ["qewr"] }]),
+            er => { expect(er).toEqual(E.left(["Option opt2 is missing"])) }
         )
     })
 
     test("command name valid, args valid, option opt1 and opt2 are missing", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1", "arg2"], opts: {} }),
-            er => { expect(er).toEqual(O.some(E.left(["Option opt1 is missing"]))) }
+            comm4_(["comm4", ["arg1", "arg2"], {}]),
+            er => { expect(er).toEqual(E.left(["Option opt1 is missing"])) }
         )
     })
 
 
     test("command name invalid, args valid, all options valid", () => {
         pipe(
-            comm4({ name: "invalidcommand", args: ["arg1", "arg2"], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
-            x => { expect(x).toEqual(O.none) }
+            comm4_(["invalidcommand", ["arg1", "arg2"], { opt1: ["opt1"], opt2: ["qewr"] }]),
+            x => { expect(E.isLeft(x)).toBeTruthy() }
         )
     })
 
     test("command name invalid, no args, all options valid", () => {
         pipe(
-            comm4({ name: "comm4", args: [], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
+            comm4_(["comm4", [], { opt1: ["opt1"], opt2: ["qewr"] }]),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(["Invalid number of args"])))
+                    E.left(["Invalid number of args"]))
             }
         )
     })
 
     test("command name invalid, one arg, all options valid", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1"], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
+            comm4_(["comm4", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }]),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(["Invalid number of args"])))
+                    E.left(["Invalid number of args"]))
             }
         )
     })
 
     test("command name invalid, 3 args, all options valid", () => {
         pipe(
-            comm4({ name: "comm4", args: ["arg1"], opts: { opt1: ["opt1"], opt2: ["qewr"] } }),
+            comm4_(["comm4", ["arg1"], { opt1: ["opt1"], opt2: ["qewr"] }]),
             x => {
                 expect(x).toEqual(
-                    O.some(E.left(["Invalid number of args"])))
+                    E.left(["Invalid number of args"]))
             }
         )
     })
@@ -87,8 +86,8 @@ describe("comm4", () => {
 describe("parseArgvMultipleArgs", () => {
     test("commWithMultipleArgs", () => {
         const argv: string[] = ["commwithmultipleargs", "arg1", "arg2", "--opt1", "opt1-value", "--opt2", "opt2-value"]
-        expect(parseArgv([comm4])(argv)).toEqual(
-            comm4({ name: "commwithmultipleargs", args: getArgs(argv), opts: getOptionDict(getAllOptionList(argv)) })
+        expect(parseArgv_([comm4_])(argv)).toEqual(
+            comm4_(["commwithmultipleargs", getArgs(argv), getOptionDict(getAllOptionList(argv))])
         )
     })
 })
@@ -145,5 +144,4 @@ describe("getArgs", () => {
             ["arg1", "arg2", "arg3", "arg4", "arg5"]
         )
     })
-
 })

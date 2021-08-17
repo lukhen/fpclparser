@@ -6,15 +6,6 @@ import * as R from "fp-ts/lib/Record";
 import { sequenceT } from "fp-ts/lib/Apply";
 import { Applicative2 } from "fp-ts/lib/Applicative";
 
-// obsolete
-export function parseArgv<A>(comms: CommandConstructor<any>[]): (argv: Array<string>) => OptionEither<A> {
-    return argv => pipe(
-        comms,
-        A.map(comm => comm({ name: argv[0], args: getArgs(argv), opts: getOptionDict(getAllOptionList(argv)) })),
-        x => A.filter(O.isSome)(x),
-        x => A.isEmpty(x) ? O.none : x[0]
-    );
-}
 
 export function parseArgv_<A>(comms: CommandConstructor_<any>[]): (argv: Array<string>) => E.Either<string[], A> {
     return argv => pipe(
@@ -139,15 +130,6 @@ function isOption(s: string) {
     return s.startsWith("--");
 }
 
-// obsolete
-export interface CommandMeta<A> {
-    tagOfA: string,
-    argCount: number,
-    reqOpts: string[],
-    innerConstructor: InnerConstructor<A>
-}
-
-
 export interface CommandMeta_<A> {
     tagOfA: string,
     argCount: number,
@@ -155,38 +137,8 @@ export interface CommandMeta_<A> {
     innerConstructor: InnerConstructor_<A>
 }
 
-// obsolete
-export type InnerConstructor<A> = (d: [string[], CommandOptionDict]) => E.Either<string[], A>
 
 export type InnerConstructor_<A> = (d: [string, string[], CommandOptionDict]) => E.Either<string[], A>
-
-// obsolete    
-export type OptionEither<A> = O.Option<E.Either<string[], A>>;
-
-
-// obsolete
-/**
-   Produce a function that produces a CommandAbs from CommandData
-**/
-export function getConstructor<A>(commandMeta: CommandMeta<A>): CommandConstructor<A> {
-    return ({ name, args, opts }) =>
-        name != commandMeta.tagOfA ?
-            O.none
-            : O.some(pipe(
-                [args, opts] as [string[], CommandOptionDict],
-                ([args, opts]) => [
-                    ensureSize(commandMeta.argCount)(args),
-                    ensureOpts(commandMeta.reqOpts)(opts)
-                ] as [
-                        E.Either<string[], string[]>,
-                        E.Either<string[], CommandOptionDict>
-                    ],
-                (x) => sequenceT(e)(...x),
-                E.chain(commandMeta.innerConstructor)
-            ));
-
-}
-
 
 /**
    Produce a function that produces a CommandAbs from CommandData
@@ -201,29 +153,12 @@ export function getConstructor_<A>(commandMeta: CommandMeta_<A>): CommandConstru
     )
 }
 
-
-// obsolete
-/**
-   Data provided by the user in argv to produce a Command.
-**/
-export interface CommandData {
-    name: string,
-    args: string[],
-    opts: CommandOptionDict
-}
-
 export type CommandData_ = [
     string,
     string[],
     CommandOptionDict
 ]
 
-
-// obsolete
-/**
-   Type of a function that produces CommandAbs from CommandData.
-**/
-export type CommandConstructor<A> = (commandData: CommandData) => OptionEither<A>;
 
 /**
  ...
@@ -295,79 +230,6 @@ function ensureSize(n: number): (ss: string[]) => E.Either<string[], string[]> {
     );
 }
 
-
-// obsolete
-export function map<X, A>(f: ((c1: A) => X)): (xe: OptionEither<A>) => OptionEither<X> {
-    return xe => O.map((e: E.Either<string[], A>) => E.map((c1: A) => f(c1))(e))(xe)
-}
-
-
-// obsolete
-export function fold<X, A>(handlers: {
-    onNone: () => X,
-    onError: (e: string[]) => X,
-    onC1: (c: A) => X
-}): (c: OptionEither<A>) => X {
-    return c => pipe(
-        c,
-        O.fold(
-            handlers.onNone,
-            E.fold(
-                handlers.onError,
-                c => handlers.onC1(c)
-            )
-        )
-    )
-}
-
-// obsolete
-export function getOptionEitherFoldable4Instance<A, B, C, D>(preds: {
-    isA: (c: A | B | C | D) => c is A,
-    isB: (c: A | B | C | D) => c is B,
-    isC: (c: A | B | C | D) => c is C
-    isD: (c: A | B | C | D) => c is D
-}): {
-    fold: <X>(handlers: {
-        onNone: () => X,
-        onError: (e: string[]) => X,
-        onA: (c: A) => X,
-        onB: (c: B) => X,
-        onC: (c: C) => X,
-        onD: (c: D) => X
-    }) => (c: OptionEither<A | B | C | D>) => X,
-    map: <X>(handlers: {
-        onA: (c: A) => X,
-        onB: (c: B) => X,
-        onC: (c: C) => X,
-        onD: (c: D) => X
-    }) => (xe: OptionEither<A | B | C | D>) => OptionEither<X>
-} {
-    return {
-        fold: handlers => c => pipe(
-            c,
-            O.fold(
-                handlers.onNone,
-                E.fold(
-                    handlers.onError,
-                    c => preds.isA(c)
-                        ? handlers.onA(c)
-                        : preds.isB(c)
-                            ? handlers.onB(c) :
-                            preds.isC(c)
-                                ? handlers.onC(c) :
-                                handlers.onD(c)
-                )
-            )
-        ),
-        map: handlers => xe => O.map((e: E.Either<string[], A | B | C | D>) => E.map((c: A | B | C | D) =>
-            preds.isA(c) ? handlers.onA(c)
-                : preds.isB(c) ? handlers.onB(c) :
-                    preds.isC(c) ? handlers.onC(c) :
-                        handlers.onD(c))(e))(xe)
-
-    }
-}
-
 export function getEitherFoldable4Instance<A, B, C, D>(preds: {
     isA: (c: A | B | C | D) => c is A,
     isB: (c: A | B | C | D) => c is B,
@@ -412,50 +274,6 @@ export function getEitherFoldable4Instance<A, B, C, D>(preds: {
 }
 
 
-
-
-// obsolete
-export function getOptionEitherFoldable3Instance<A, B, C>(preds: {
-    isA: (c: A | B | C) => c is A,
-    isB: (c: A | B | C) => c is B,
-    isC: (c: A | B | C) => c is C
-}): {
-    fold: <X>(handlers: {
-        onNone: () => X,
-        onError: (e: string[]) => X,
-        onA: (c: A) => X,
-        onB: (c: B) => X,
-        onC: (c: C) => X,
-    }) => (c: OptionEither<A | B | C>) => X,
-    map: <X>(handlers: {
-        onA: (c: A) => X,
-        onB: (c: B) => X,
-        onC: (c: C) => X,
-    }) => (xe: OptionEither<A | B | C>) => OptionEither<X>
-
-} {
-    return {
-        fold: handlers => c => pipe(
-            c,
-            O.fold(
-                handlers.onNone,
-                E.fold(
-                    handlers.onError,
-                    c => preds.isA(c)
-                        ? handlers.onA(c)
-                        : preds.isB(c)
-                            ? handlers.onB(c) :
-                            handlers.onC(c)
-                )
-            )
-        ),
-        map: handlers => xe => O.map((e: E.Either<string[], A | B | C>) => E.map((c: A | B | C) =>
-            preds.isA(c) ? handlers.onA(c)
-                : preds.isB(c) ? handlers.onB(c) :
-                    handlers.onC(c))(e))(xe)
-    }
-}
-
 export function getEitherFoldable3Instance<A, B, C>(preds: {
     isA: (c: A | B | C) => c is A,
     isB: (c: A | B | C) => c is B,
@@ -489,41 +307,6 @@ export function getEitherFoldable3Instance<A, B, C>(preds: {
             preds.isA(c) ? handlers.onA(c)
                 : preds.isB(c) ? handlers.onB(c) :
                     handlers.onC(c))(xe)
-    }
-}
-
-
-// obsolete
-export function getOptionEitherFoldable2Instance<A, B>(preds: {
-    isA: (c: A | B) => c is A,
-    isB: (c: A | B) => c is B,
-}): {
-    fold: <X>(handlers: {
-        onNone: () => X,
-        onError: (e: string[]) => X,
-        onA: (c: A) => X,
-        onB: (c: B) => X,
-    }) => (c: OptionEither<A | B>) => X,
-    map: <X>(handlers: {
-        onA: (c: A) => X,
-        onB: (c: B) => X
-    }) => (xe: OptionEither<A | B>) => OptionEither<X>
-} {
-    return {
-        fold: handlers => c => pipe(
-            c,
-            O.fold(
-                handlers.onNone,
-                E.fold(
-                    handlers.onError,
-                    c => preds.isA(c)
-                        ? handlers.onA(c) :
-                        handlers.onB(c)
-                )
-            )
-        ),
-        map: handlers => xe => O.map((e: E.Either<string[], A | B>) => E.map((c: A | B) =>
-            preds.isA(c) ? handlers.onA(c) : handlers.onB(c))(e))(xe)
     }
 }
 
